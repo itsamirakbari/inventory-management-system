@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}
+Suppliers
+{% endblock %}
+
+{% block content %}
+
+<div class="suppliers-page">
+    <div class="suppliers-header">
+        <div class="suppliers-header-content">
+            <div class="suppliers-header-main">
+                <div class="suppliers-header-badge">
+                    <div class="suppliers-header-icon">
+                        <i class="fa-solid fa-truck-field"></i>
+                    </div>
+                    <span>Supply Network</span>
+                </div>
+
+                <h1>Suppliers</h1>
+                <p>Manage your suppliers and partner information in one place.</p>
+            </div>
+
+            <div class="suppliers-header-stats">
+                <div class="suppliers-stat-card">
+                    <div class="suppliers-stat-icon suppliers-stat-icon-orange">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div class="suppliers-stat-value">{{ suppliers|length }}</div>
+                    <div class="suppliers-stat-label">Total Suppliers</div>
+                </div>
+
+                <div class="suppliers-stat-card">
+                    <div class="suppliers-stat-icon suppliers-stat-icon-blue">
+                        <i class="fa-regular fa-address-card"></i>
+                    </div>
+                    <div class="suppliers-stat-value suppliers-stat-value-blue">Contact Ready</div>
+                    <div class="suppliers-stat-label">Partner details available</div>
+                </div>
+
+                <div class="suppliers-stat-card">
+                    <div class="suppliers-stat-icon suppliers-stat-icon-green">
+                        <i class="fa-solid fa-earth-europe"></i>
+                    </div>
+                    <div class="suppliers-stat-value suppliers-stat-value-green">Supply Coverage</div>
+                    <div class="suppliers-stat-label">Structured network</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="auth-flash-container">
+                {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="suppliers-content suppliers-content-full">
+        <div class="suppliers-table-section suppliers-table-section-full">
+            <div class="suppliers-table-card suppliers-table-card-full">
+                <div class="suppliers-table-header">
+                    <div class="suppliers-table-title">
+                        <div class="suppliers-table-icon">
+                            <i class="fa-solid fa-truck-field"></i>
+                        </div>
+                        <h2>All Suppliers</h2>
+                    </div>
+
+                    <div class="suppliers-table-tools">
+                        <div class="suppliers-count">
+                            {{ suppliers|length }} Suppliers
+                        </div>
+
+                        <a href="{{ url_for('suppliers.add_supplier_route') }}" class="suppliers-add-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add New Supplier</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="suppliers-search-bar">
+                    <div class="suppliers-search-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="suppliers-search"
+                            placeholder="Search suppliers by company, contact, email or city..."
+                            aria-label="Search suppliers"
+                        >
+                    </div>
+                </div>
+
+                <div class="data-table-scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Contact</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>City</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% if suppliers %}
+                        {% for supplier in suppliers %}
+                        <tr data-supplier-search="{{ (supplier.company_name ~ ' ' ~ supplier.contact_person ~ ' ' ~ supplier.email ~ ' ' ~ supplier.city)|lower }}">
+                            {% if request.args.get("edit") == supplier.id|string %}
+                                <td>
+                                    <input type="text" name="company_name" value="{{ supplier.company_name }}" form="update-supplier-{{ supplier.id }}" required>
+                                </td>
+                                <td>
+                                    <input type="text" name="contact_person" value="{{ supplier.contact_person }}" form="update-supplier-{{ supplier.id }}" required>
+                                </td>
+                                <td>
+                                    <input type="email" name="email" value="{{ supplier.email }}" form="update-supplier-{{ supplier.id }}" required>
+                                </td>
+                                <td>
+                                    <input type="text" name="phone" value="{{ supplier.phone }}" form="update-supplier-{{ supplier.id }}" required>
+                                </td>
+                                <td>
+                                    <input type="text" name="city" value="{{ supplier.city }}" form="update-supplier-{{ supplier.id }}" required>
+                                </td>
+                                <td>
+                                    <div class="supplier-actions">
+                                        <button type="submit" form="update-supplier-{{ supplier.id }}" class="action-btn edit-btn" title="Save supplier" aria-label="Save supplier">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                        <a href="{{ url_for('suppliers.suppliers') }}" class="action-btn delete-btn" title="Cancel edit" aria-label="Cancel edit">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </a>
+                                    </div>
+
+                                    <form id="update-supplier-{{ supplier.id }}" action="{{ url_for('suppliers.update_supplier_route', supplier_id=supplier.id) }}" method="POST">
+                                        <input type="hidden" name="street" value="{{ supplier.street }}">
+                                        <input type="hidden" name="house_number" value="{{ supplier.house_number }}">
+                                        <input type="hidden" name="postal_code" value="{{ supplier.postal_code }}">
+                                        <input type="hidden" name="country" value="{{ supplier.country }}">
+                                        <input type="hidden" name="description" value="{{ supplier.description }}">
+                                    </form>
+                                </td>
+                            {% else %}
+                                <td>{{ supplier.company_name }}</td>
+                                <td>
+                                    <span class="supplier-contact-name">
+                                        <i class="fa-regular fa-user"></i>
+                                        <span>{{ supplier.contact_person }}</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="mailto:{{ supplier.email }}" class="supplier-email-link">
+                                        {{ supplier.email }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="tel:{{ supplier.phone|replace(' ', '') }}" class="supplier-phone-link">
+                                        {{ supplier.phone }}
+                                    </a>
+                                </td>
+                                <td>{{ supplier.city }}</td>
+                                <td>
+                                    <div class="supplier-actions">
+                                        <a href="{{ url_for('suppliers.suppliers', edit=supplier.id) }}" class="action-btn edit-btn" title="Edit supplier" aria-label="Edit supplier">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </a>
+                                        <form action="{{ url_for('suppliers.delete_supplier_route', supplier_id=supplier.id) }}" method="POST">
+                                            <button type="submit" class="action-btn delete-btn" title="Delete supplier" aria-label="Delete supplier">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr class="default-empty-row">
+                            <td colspan="6" class="empty-state">No suppliers available yet.</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+
+                {% if suppliers %}
+                    <div class="suppliers-search-empty" id="suppliers-search-empty" hidden>
+                        No matching suppliers found.
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("suppliers-search");
+        const searchEmpty = document.getElementById("suppliers-search-empty");
+        const countElement = document.querySelector(".suppliers-count");
+
+        if (!searchInput || !countElement) {
+            return;
+        }
+
+        const rows = Array.from(document.querySelectorAll("tr[data-supplier-search]"));
+        const totalCount = rows.length;
+
+        const updateCountLabel = function (visibleCount) {
+            countElement.textContent = `${visibleCount} ${visibleCount === 1 ? "Supplier" : "Suppliers"}`;
+        };
+
+        updateCountLabel(totalCount);
+
+        searchInput.addEventListener("input", function () {
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const haystack = row.dataset.supplierSearch || "";
+                const matches = haystack.includes(query);
+                row.style.display = matches ? "" : "none";
+
+                if (matches) {
+                    visibleCount += 1;
+                }
+            });
+
+            updateCountLabel(visibleCount);
+
+            if (searchEmpty) {
+                searchEmpty.hidden = visibleCount !== 0;
+            }
+        });
+    });
+</script>
+
+{% endblock %}

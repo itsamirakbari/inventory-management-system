@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block title %}
+Inventory Transactions
+{% endblock %}
+
+{% block content %}
+
+<div class="inventory-transactions-page">
+    <div class="inventory-transactions-header">
+        <div class="inventory-transactions-header-content">
+            <div class="inventory-transactions-header-main">
+                <div class="inventory-transactions-header-badge">
+                    <div class="inventory-transactions-header-icon">
+                        <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                    </div>
+                    <span>Stock Movement</span>
+                </div>
+
+                <h1>Inventory Transactions</h1>
+                <p>Track all stock movements, adjustments, and inventory activity in one place.</p>
+            </div>
+
+            <div class="inventory-transactions-header-stats">
+                <div class="inventory-transactions-stat-card">
+                    <div class="inventory-transactions-stat-icon inventory-transactions-stat-icon-orange">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                    </div>
+                    <div class="inventory-transactions-stat-value">{{ stock_in_count }}</div>
+                    <div class="inventory-transactions-stat-label">Stock In / Adjust In</div>
+                </div>
+
+                <div class="inventory-transactions-stat-card">
+                    <div class="inventory-transactions-stat-icon inventory-transactions-stat-icon-blue">
+                        <i class="fa-solid fa-arrow-trend-down"></i>
+                    </div>
+                    <div class="inventory-transactions-stat-value inventory-transactions-stat-value-blue">{{ stock_out_count }}</div>
+                    <div class="inventory-transactions-stat-label">Stock Out / Adjust Out</div>
+                </div>
+
+                <div class="inventory-transactions-stat-card">
+                    <div class="inventory-transactions-stat-icon inventory-transactions-stat-icon-green">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                    <div class="inventory-transactions-stat-value inventory-transactions-stat-value-green">{{ today_transaction_count }}</div>
+                    <div class="inventory-transactions-stat-label">Transactions Today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="auth-flash-container">
+                {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="inventory-transactions-content inventory-transactions-content-full">
+        <div class="inventory-transactions-table-section inventory-transactions-table-section-full">
+            <div class="inventory-transactions-table-card inventory-transactions-table-card-full">
+                <div class="inventory-transactions-table-header">
+                    <div class="inventory-transactions-table-title">
+                        <div class="inventory-transactions-table-icon">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        </div>
+                        <h2>All Transactions</h2>
+                    </div>
+
+                    <div class="inventory-transactions-table-tools">
+                        <div class="inventory-transactions-count">
+                            {{ transactions|length }} Transactions
+                        </div>
+
+                        <a href="{{ url_for('inventory_transactions.add_inventory_transaction_route') }}" class="inventory-transactions-add-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add New Transaction</span>
+                        </a>
+                    </div>
+                </div>
+
+                <form action="{{ url_for('inventory_transactions.inventory_transactions') }}" method="GET" class="inventory-transactions-filters">
+                    <div class="inventory-transactions-filter-grid">
+                        <div class="inventory-transactions-filter-group">
+                            <label for="product_id">Product</label>
+                            <select id="product_id" name="product_id">
+                                <option value="">All products</option>
+                                {% for product in products %}
+                                    <option value="{{ product.id }}" {% if selected_product_id == product.id %}selected{% endif %}>
+                                        {{ product.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="inventory-transactions-filter-group">
+                            <label for="user_id">User</label>
+                            <select id="user_id" name="user_id">
+                                <option value="">All users</option>
+                                {% for user in users %}
+                                    <option value="{{ user.id }}" {% if selected_user_id == user.id %}selected{% endif %}>
+                                        {{ user.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="inventory-transactions-filter-group">
+                            <label for="start_date">Start Date</label>
+                            <input type="date" id="start_date" name="start_date" value="{{ selected_start_date }}">
+                        </div>
+
+                        <div class="inventory-transactions-filter-group">
+                            <label for="end_date">End Date</label>
+                            <input type="date" id="end_date" name="end_date" value="{{ selected_end_date }}">
+                        </div>
+                    </div>
+
+                    <div class="inventory-transactions-filter-actions">
+                        <a href="{{ url_for('inventory_transactions.inventory_transactions') }}" class="inventory-transactions-filter-reset">Reset</a>
+                        <button type="submit" class="inventory-transactions-filter-apply">
+                            <i class="fa-solid fa-filter"></i>
+                            <span>Apply Filters</span>
+                        </button>
+                    </div>
+                </form>
+
+                <div class="inventory-transactions-search-bar">
+                    <div class="inventory-transactions-search-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="inventory-transactions-search"
+                            placeholder="Search by type, reason, reference, product or user..."
+                            aria-label="Search inventory transactions"
+                        >
+                    </div>
+                </div>
+
+                <div class="data-table-scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Reason</th>
+                        <th>Reference</th>
+                        <th>User</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% if transactions %}
+                        {% for transaction in transactions %}
+                        <tr data-transaction-search="{{ (transaction.transaction_type ~ ' ' ~ transaction.reason ~ ' ' ~ transaction.transaction_reference ~ ' ' ~ products_map.get(transaction.product_id, '') ~ ' ' ~ users_map.get(transaction.user_id, ''))|lower }}">
+                            <td>
+                                <span class="transaction-type-badge {{ transaction.transaction_type }}">
+                                    {{ transaction.transaction_type|replace('_', ' ')|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="transaction-product-name">
+                                    <i class="fa-solid fa-box"></i>
+                                    <span>{{ products_map.get(transaction.product_id, 'Unknown Product') }}</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="transaction-quantity-badge {% if transaction.transaction_type in ['stock_in', 'adjustment_in'] %}positive{% else %}negative{% endif %}">
+                                    {{ '+' if transaction.transaction_type in ['stock_in', 'adjustment_in'] else '-' }}{{ transaction.quantity }}
+                                </span>
+                            </td>
+                            <td>{{ transaction.reason|replace('_', ' ')|title }}</td>
+                            <td>
+                                <span class="transaction-reference-badge">{{ transaction.transaction_reference }}</span>
+                            </td>
+                            <td>
+                                <span class="transaction-user-name">
+                                    <i class="fa-regular fa-user"></i>
+                                    <span>{{ users_map.get(transaction.user_id, 'Unknown User') }}</span>
+                                </span>
+                            </td>
+                            <td>{{ transaction.created_at.strftime('%d.%m.%Y') }}</td>
+                            <td>
+                                <div class="transaction-actions">
+                                    <a href="{{ url_for('inventory_transactions.inventory_transaction_detail', transaction_id=transaction.id) }}" class="action-btn edit-btn" title="View transaction" aria-label="View transaction">
+                                        <i class="fa-regular fa-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr class="default-empty-row">
+                            <td colspan="8" class="empty-state">No inventory transactions available yet.</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+
+                {% if transactions %}
+                    <div class="inventory-transactions-search-empty" id="inventory-transactions-search-empty" hidden>
+                        No matching transactions found.
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/inventory_transactions.js') }}"></script>
+
+{% endblock %}

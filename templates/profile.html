@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-page">
+
+    <section class="profile-hero">
+        <div class="profile-hero-badge">
+            <i class="fa-regular fa-user" aria-hidden="true"></i>
+            <span>Account Settings</span>
+        </div>
+
+        <div class="profile-hero-content">
+            <h1>Profile</h1>
+            <p>Review your account information and manage your email address and password.</p>
+        </div>
+    </section>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <div class="auth-flash-container profile-flash-container">
+          {% for category, message in messages %}
+            <div class="auth-flash-message {{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <section class="profile-overview-card">
+        <div class="profile-overview-icon" aria-hidden="true">
+            <i class="fa-regular fa-user"></i>
+        </div>
+
+        <div class="profile-overview-heading">
+            <span>Signed in as</span>
+            <h2>{{ profile_user.username }}</h2>
+            <p>{{ profile_user.role|capitalize }} account</p>
+        </div>
+
+        <div class="profile-overview-details">
+            <div class="profile-detail-item">
+                <span>Email address</span>
+                <strong>{{ profile_user.email }}</strong>
+            </div>
+
+            <div class="profile-detail-item">
+                <span>Member since</span>
+                <strong>
+                    {% if profile_user.created_at %}
+                        {{ profile_user.created_at.strftime('%d.%m.%Y') }}
+                    {% else %}
+                        Not available
+                    {% endif %}
+                </strong>
+            </div>
+
+            <div class="profile-detail-item">
+                <span>Last updated</span>
+                <strong>
+                    {% if profile_user.updated_at %}
+                        {{ profile_user.updated_at.strftime('%d.%m.%Y, %H:%M') }}
+                    {% else %}
+                        Not updated yet
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+    </section>
+
+    <div class="profile-settings-grid">
+
+        <section class="profile-settings-card profile-email-card">
+            <div class="profile-settings-header">
+                <div class="profile-settings-icon" aria-hidden="true">
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+
+                <div>
+                    <h2>Change Email Address</h2>
+                    <p>A verification code will be sent to your new email address.</p>
+                </div>
+            </div>
+
+            <form action="{{ url_for('profile.update_email') }}" method="POST" class="profile-settings-form">
+                <div class="form-group">
+                    <label for="profile_email">New Email Address</label>
+                    <input
+                        class="form-input"
+                        type="email"
+                        id="profile_email"
+                        name="email"
+                        value="{{ profile_user.email }}"
+                        placeholder="name@example.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email_current_password">Current Password</label>
+                    <div class="password-field">
+                        <input
+                            class="form-input"
+                            type="password"
+                            id="email_current_password"
+                            name="current_password"
+                            placeholder="Confirm with your current password"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="email_current_password"
+                            aria-label="Show password"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="form-button" type="submit">Send Verification Code</button>
+                </div>
+            </form>
+        </section>
+
+        {% if session.get('pending_email_change') %}
+        <section class="profile-settings-card profile-verification-card">
+            <div class="profile-settings-header">
+                <div class="profile-settings-icon" aria-hidden="true">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+                    <h2>Verify New Email</h2>
+                    <p>
+                        Enter the 6-digit code sent to
+                        <strong>{{ session['pending_email_change']['new_email'] }}</strong>.
+                    </p>
+                </div>
+            </div>
+
+            <form action="{{ url_for('profile.verify_email') }}" method="POST" class="profile-settings-form">
+                <div class="form-group">
+                    <label for="email_verification_code">Verification Code</label>
+                    <input
+                        class="form-input"
+                        type="text"
+                        id="email_verification_code"
+                        name="verification_code"
+                        placeholder="Enter your 6-digit code"
+                        inputmode="numeric"
+                        pattern="[0-9]{6}"
+                        maxlength="6"
+                        autocomplete="one-time-code"
+                        required
+                    >
+                </div>
+
+                <div class="form-actions">
+                    <button class="form-button" type="submit">Verify Email Address</button>
+                </div>
+            </form>
+        </section>
+        {% endif %}
+
+        <section class="profile-settings-card profile-password-card">
+            <div class="profile-settings-header">
+                <div class="profile-settings-icon" aria-hidden="true">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+
+                <div>
+                    <h2>Change Password</h2>
+                    <p>Use at least 8 characters with a letter and a number.</p>
+                </div>
+            </div>
+
+            <form action="{{ url_for('profile.change_password') }}" method="POST" class="profile-settings-form">
+                <div class="form-group">
+                    <label for="password_current_password">Current Password</label>
+                    <div class="password-field">
+                        <input
+                            class="form-input"
+                            type="password"
+                            id="password_current_password"
+                            name="current_password"
+                            placeholder="Enter your current password"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="password_current_password"
+                            aria-label="Show password"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="profile_new_password">New Password</label>
+                    <div class="password-field">
+                        <input
+                            class="form-input"
+                            type="password"
+                            id="profile_new_password"
+                            name="new_password"
+                            placeholder="Enter your new password"
+                            minlength="8"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="profile_new_password"
+                            aria-label="Show password"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="profile_confirm_new_password">Confirm New Password</label>
+                    <div class="password-field">
+                        <input
+                            class="form-input"
+                            type="password"
+                            id="profile_confirm_new_password"
+                            name="confirm_new_password"
+                            placeholder="Repeat your new password"
+                            minlength="8"
+                            autocomplete="new-password"
+                            required
+                        >
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            data-target="profile_confirm_new_password"
+                            aria-label="Show password"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="form-button" type="submit">Change Password</button>
+                </div>
+            </form>
+        </section>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
+{% endblock %}

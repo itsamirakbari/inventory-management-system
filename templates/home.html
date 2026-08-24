@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+<section class="home-presentation" aria-labelledby="home-presentation-title">
+  <div class="home-presentation-shell">
+    <div class="home-presentation-card">
+      <img
+        class="home-presentation-logo"
+        src="{{ url_for('static', filename='images/logo.png') }}"
+        alt="InventoryPro Logo"
+      >
+
+      <div class="home-presentation-badge">
+        <i class="fa-solid fa-flask" aria-hidden="true"></i>
+        <span>Demo Version · Testversion</span>
+      </div>
+
+      <h1 id="home-presentation-title">Inventory Management System Pro</h1>
+
+      <div class="home-presentation-copy">
+        <div class="home-presentation-language">
+          <span class="home-presentation-language-label">EN</span>
+          <p>
+            This demonstration version of InventoryPro presents the design,
+            inventory workflows, and core management capabilities of the
+            application. It shows how products, categories, suppliers, stock
+            levels, and inventory transactions can be managed securely from one
+            centralized platform. The system provides a practical foundation for
+            efficient day-to-day inventory control and clear operational
+            visibility. Based on each company's processes, requirements, and
+            branding, InventoryPro can be individually extended and adapted into
+            a tailored business solution.
+          </p>
+        </div>
+
+        <div class="home-presentation-language">
+          <span class="home-presentation-language-label">DE</span>
+          <p>
+            Diese Testversion von InventoryPro präsentiert das Design, die
+            Lagerprozesse und die zentralen Verwaltungsfunktionen der Anwendung.
+            Sie zeigt, wie Produkte, Kategorien, Lieferanten, Bestände und
+            Lagerbewegungen sicher über eine zentrale Plattform verwaltet werden
+            können. Das System bietet eine praxisnahe Grundlage für eine effiziente
+            tägliche Bestandskontrolle und eine klare betriebliche Übersicht.
+            Abhängig von den Prozessen, Anforderungen und dem Markenauftritt eines
+            Unternehmens kann InventoryPro individuell erweitert und zu einer
+            maßgeschneiderten Unternehmenslösung angepasst werden.
+          </p>
+        </div>
+      </div>
+
+      <div class="home-presentation-demo">
+        <div class="home-presentation-demo-copy">
+          <strong>Ready to explore? · Bereit zum Testen?</strong>
+          <span>
+            Start the demo and experience InventoryPro in action. · Starten Sie die Demo und erleben Sie InventoryPro in Aktion.
+          </span>
+        </div>
+
+        <a class="home-presentation-action" href="{{ url_for('auth.login') }}">
+          <span>Explore Demo</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+
+    <aside class="home-presentation-creator" aria-label="Creator information">
+      <div class="home-presentation-creator-icon" aria-hidden="true">
+        <i class="fa-solid fa-code"></i>
+      </div>
+
+      <div class="home-presentation-creator-copy">
+        <span>Designed &amp; developed by</span>
+        <strong>Amir Akbari</strong>
+        <small>Python Developer · Flask · MySQL</small>
+      </div>
+
+      <div class="home-presentation-creator-links">
+        <a
+          class="home-presentation-contact"
+          href="mailto:akbarii.amiir@gmail.com"
+          aria-label="Email Amir Akbari"
+        >
+          <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+          <span>akbarii.amiir@gmail.com</span>
+        </a>
+
+        <a
+          class="home-presentation-github"
+          href="https://github.com/itsamirakbari"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Visit Amir Akbari on GitHub"
+        >
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+          <span>@itsamirakbari</span>
+          <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+        </a>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

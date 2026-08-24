@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}
+Products
+{% endblock %}
+
+{% block content %}
+
+<div class="products-page">
+    <div class="products-header">
+        <div class="products-header-content">
+            <div class="products-header-main">
+                <div class="products-header-badge">
+                    <div class="products-header-icon">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <span>Product Catalog</span>
+                </div>
+
+                <h1>Products</h1>
+                <p>Manage your products, stock values, and product availability in one place.</p>
+            </div>
+
+            <div class="products-header-stats">
+                <div class="products-stat-card">
+                    <div class="products-stat-icon products-stat-icon-orange">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div class="products-stat-value">{{ products|length }}</div>
+                    <div class="products-stat-label">Total Products</div>
+                </div>
+
+                <div class="products-stat-card">
+                    <div class="products-stat-icon products-stat-icon-blue">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <div class="products-stat-value products-stat-value-blue">Stock Control</div>
+                    <div class="products-stat-label">Inventory visibility</div>
+                </div>
+
+                <div class="products-stat-card">
+                    <div class="products-stat-icon products-stat-icon-green">
+                        <i class="fa-solid fa-toggle-on"></i>
+                    </div>
+                    <div class="products-stat-value products-stat-value-green">Active Items</div>
+                    <div class="products-stat-label">Ready for operations</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="auth-flash-container">
+                {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="products-content products-content-full">
+        <div class="products-table-section products-table-section-full">
+            <div class="products-table-card products-table-card-full">
+                <div class="products-table-header">
+                    <div class="products-table-title">
+                        <div class="products-table-icon">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <h2>All Products</h2>
+                    </div>
+
+                    <div class="products-table-tools">
+                        <div class="products-count">
+                            {{ products|length }} Products
+                        </div>
+
+                        <a href="{{ url_for('products.add_product_route') }}" class="products-add-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add New Product</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="products-search-bar">
+                    <div class="products-search-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="products-search"
+                            placeholder="Search products by name or SKU..."
+                            aria-label="Search products"
+                        >
+                    </div>
+                </div>
+
+                <div class="data-table-scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>SKU</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Category</th>
+                        <th>Supplier</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% if products %}
+                        {% for product in products %}
+                        <tr data-product-search="{{ (product.name ~ ' ' ~ product.sku ~ ' ' ~ categories_map.get(product.category_id, '') ~ ' ' ~ suppliers_map.get(product.supplier_id, ''))|lower }}">
+                            {% if request.args.get("edit") == product.id|string %}
+                                <td>
+                                    <input type="text" name="name" value="{{ product.name }}" form="update-product-{{ product.id }}" required>
+                                </td>
+                                <td>
+                                    <input type="text" name="sku" value="{{ product.sku }}" form="update-product-{{ product.id }}" required>
+                                </td>
+                                <td>
+                                    <input type="number" name="price" value="{{ product.price }}" step="0.01" min="0" form="update-product-{{ product.id }}" required>
+                                </td>
+                                <td>
+                                    <input type="number" name="stock_quantity" value="{{ product.stock_quantity }}" min="0" form="update-product-{{ product.id }}" required>
+                                </td>
+                                <td>
+                                    <select name="category_id" form="update-product-{{ product.id }}" required>
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}" {% if category.id == product.category_id %}selected{% endif %}>
+                                                {{ category.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="supplier_id" form="update-product-{{ product.id }}" required>
+                                        {% for supplier in suppliers %}
+                                            <option value="{{ supplier.id }}" {% if supplier.id == product.supplier_id %}selected{% endif %}>
+                                                {{ supplier.company_name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <span class="product-status-badge {{ 'active' if product.is_active else 'inactive' }}">
+                                        {{ 'Active' if product.is_active else 'Inactive' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="product-actions">
+                                        <button type="submit" form="update-product-{{ product.id }}" class="action-btn edit-btn" title="Save product" aria-label="Save product">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                        <a href="{{ url_for('products.products') }}" class="action-btn delete-btn" title="Cancel edit" aria-label="Cancel edit">
+                                            <i class="fa-solid fa-xmark"></i>
+                                        </a>
+                                    </div>
+                                    <form id="update-product-{{ product.id }}" action="{{ url_for('products.update_product_route', product_id=product.id) }}" method="POST"></form>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <span class="product-name-cell">
+                                        <i class="fa-solid fa-cube"></i>
+                                        <span>{{ product.name }}</span>
+                                    </span>
+                                </td>
+                                <td><span class="product-sku-badge">{{ product.sku }}</span></td>
+                                <td>€ {{ "%.2f"|format(product.price) }}</td>
+                                <td>{{ product.stock_quantity }}</td>
+                                <td>
+                                    <span class="product-category-badge">
+                                        {{ categories_map.get(product.category_id, 'Unknown Category') }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="product-supplier-name">
+                                        <i class="fa-regular fa-building"></i>
+                                        <span>{{ suppliers_map.get(product.supplier_id, 'Unknown Supplier') }}</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('products.update_product_status_route', product_id=product.id) }}" method="POST" class="product-status-form" onsubmit='return confirmProductStatusChange({{ product.name|tojson }}, {{ "true" if product.is_active else "false" }});'>
+                                        <button type="submit" class="product-status-badge {{ 'active' if product.is_active else 'inactive' }}" title="Toggle product status">
+                                            {{ 'Active' if product.is_active else 'Inactive' }}
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="product-actions">
+                                        <a href="{{ url_for('products.products', edit=product.id) }}" class="action-btn edit-btn" title="Edit product" aria-label="Edit product">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </a>
+                                        <form action="{{ url_for('products.delete_product_route', product_id=product.id) }}" method="POST">
+                                            <button type="submit" class="action-btn delete-btn" title="Delete product" aria-label="Delete product">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr class="default-empty-row">
+                            <td colspan="8" class="empty-state">No products available yet.</td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+
+                {% if products %}
+                    <div class="products-search-empty" id="products-search-empty" hidden>
+                        No matching products found.
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/products.js') }}"></script>
+
+{% endblock %}

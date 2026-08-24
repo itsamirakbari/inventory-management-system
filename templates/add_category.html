@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Category
+{% endblock %}
+
+{% block content %}
+
+<div class="add-category-page">
+    <div class="add-category-shell">
+        <div class="add-category-header">
+            <div class="categories-header-badge">
+                <div class="categories-header-icon">
+                    <i class="fa-regular fa-folder-plus"></i>
+                </div>
+                <span>New Category</span>
+            </div>
+
+            <h1>Add New Category</h1>
+            <p>Create a new category to keep your inventory structured and easy to manage.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash-container">
+                    {% for category, message in messages %}
+                        <div class="auth-flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="categories-form-card add-category-form-card">
+            <form action="{{ url_for('categories.add_category_route') }}" method="POST">
+                <div class="categories-form-header">
+                    <div class="categories-form-title">
+                        <div class="categories-form-icon">
+                            <i class="fa-regular fa-folder-plus"></i>
+                        </div>
+                        <h2>Category Information</h2>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category_name">Category Name <span class="required-mark">*</span></label>
+                    <input type="text" id="category_name" name="category_name" placeholder="Enter category name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="category_description">Description <span class="required-mark">*</span></label>
+                    <textarea id="category_description" name="category_description" placeholder="Enter category description" rows="5" required></textarea>
+                </div>
+
+                <div class="add-category-actions">
+                    <a href="{{ url_for('categories.categories') }}" class="add-category-cancel">Back to Categories</a>
+                    <button type="submit">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Category</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard-page">
+    <div class="dashboard-top">
+
+        <div class="dashboard-top-left">
+            <div class="dashboard-hero">
+
+                <div class="dashboard-hero-badge">
+                    <div class="dashboard-hero-badge-icon">
+                    </div>
+
+                    <div class="dashboard-hero-badge-text">
+                        Dashboard Overview
+                    </div>
+                </div>
+
+                <div class="dashboard-hero-content">
+                    <h1 class="dashboard-hero-title">Dashboard</h1>
+
+                    <p class="dashboard-hero-description">
+                        Monitor your inventory performance, stock activity, and critical alerts in one place.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="dashboard-top-right">
+            <div class="dashboard-kpi-section">
+                <div class="dashboard-kpi-cards">
+
+                    <div class="dashboard-kpi-card dashboard-kpi-card-products">
+                        <div class="dashboard-kpi-card-icon">
+                        </div>
+
+                        <div class="dashboard-kpi-card-value">
+                            {{ total_products }}
+                        </div>
+
+                        <div class="dashboard-kpi-card-label">
+                            Total Products
+                        </div>
+                    </div>
+
+                    <div class="dashboard-kpi-card dashboard-kpi-card-active">
+                        <div class="dashboard-kpi-card-icon">
+                        </div>
+
+                        <div class="dashboard-kpi-card-value">
+                            {{ active_products }}
+                        </div>
+
+                        <div class="dashboard-kpi-card-label">
+                            Active Products
+                        </div>
+                    </div>
+
+                    <div class="dashboard-kpi-card dashboard-kpi-card-low-stock">
+                        <div class="dashboard-kpi-card-icon">
+                        </div>
+
+                        <div class="dashboard-kpi-card-value">
+                            {{ low_stock_products_count }}
+                        </div>
+
+                        <div class="dashboard-kpi-card-label">
+                            Low Stock Items
+                        </div>
+                    </div>
+
+                    <div class="dashboard-kpi-card dashboard-kpi-card-today-transactions">
+                        <div class="dashboard-kpi-card-icon">
+                        </div>
+
+                        <div class="dashboard-kpi-card-value">
+                            {{ today_transactions }}
+                        </div>
+
+                        <div class="dashboard-kpi-card-label">
+                            Transactions Today
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="dashboard-content">
+
+        <div class="dashboard-transactions-row">
+            <div class="dashboard-recent-transactions">
+
+                <div class="dashboard-recent-transactions-header">
+                    <div class="dashboard-recent-transactions-title-group">
+                        <h2 class="dashboard-section-title">Recent Transactions</h2>
+
+                        <p class="dashboard-section-subtitle">
+                            Review the latest stock movements and activity updates.
+                        </p>
+                    </div>
+
+                    <div class="dashboard-recent-transactions-action">
+                        <a href="{{ url_for('inventory_transactions.inventory_transactions') }}" class="dashboard-link-button">
+                            View All
+                        </a>
+                    </div>
+                </div>
+
+                <div class="dashboard-recent-transactions-body">
+                    <div class="dashboard-recent-transactions-content">
+
+                        {% if recent_transactions %}
+
+                        <div class="dashboard-recent-transactions-columns">
+                            <div class="dashboard-recent-transactions-column">TYPE</div>
+                            <div class="dashboard-recent-transactions-column">ITEM</div>
+                            <div class="dashboard-recent-transactions-column">REFERENCE</div>
+                            <div class="dashboard-recent-transactions-column">QUANTITY</div>
+                            <div class="dashboard-recent-transactions-column">USER</div>
+                            <div class="dashboard-recent-transactions-column">TIME</div>
+                        </div>
+
+                        <div class="dashboard-recent-transactions-list">
+
+                            {% for transaction in recent_transactions %}
+                            <div class="dashboard-transaction-item">
+
+                                <div class="dashboard-transaction-main">
+                                    <div class="dashboard-transaction-type" data-type="{{ transaction.transaction_type }}">
+                                        {% if transaction.transaction_type == "stock_in" %}
+                                            Stock In
+                                        {% elif transaction.transaction_type == "stock_out" %}
+                                            Stock Out
+                                        {% elif transaction.transaction_type == "adjustment_in" %}
+                                            Adjustment In
+                                        {% elif transaction.transaction_type == "adjustment_out" %}
+                                            Adjustment Out
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="dashboard-transaction-product">
+                                        <span>{{ transaction.product_name }}</span>
+                                        <small>SKU: {{ transaction.product_sku }}</small>
+                                    </div>
+
+                                    <div class="dashboard-transaction-reference">
+                                        {{ transaction.transaction_reference }}
+                                    </div>
+
+                                </div>
+
+                                <div class="dashboard-transaction-meta">
+                                    <div class="dashboard-transaction-quantity">
+                                        <span>{{ transaction.quantity }}</span>
+                                        <small>Units</small>
+                                    </div>
+
+                                    <div class="dashboard-transaction-user">
+                                        {{ transaction.username }}
+                                    </div>
+
+                                    <div class="dashboard-transaction-date">
+                                        <span>{{ transaction.display_day }}</span>
+                                        <small>{{ transaction.display_time }}</small>
+                                    </div>
+                                </div>
+
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                        {% else %}
+
+                            <div class="dashboard-empty-state">
+                                No recent transactions available.
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="dashboard-overview-row">
+            <div class="dashboard-alerts-panel">
+
+                <div class="dashboard-alerts-header">
+                    <div class="dashboard-alerts-title-group">
+                        <h2 class="dashboard-section-title">Alerts</h2>
+
+                        <p class="dashboard-section-subtitle">
+                            Review critical stock issues that need your attention.
+                        </p>
+                    </div>
+
+                    <div class="dashboard-alerts-action">
+                        <a href="{{ url_for('products.products') }}" class="dashboard-link-button">
+                            View All
+                        </a>
+                    </div>
+
+                </div>
+
+                <div class="dashboard-alerts-body">
+
+                    {% if dashboard_alerts %}
+
+                    <div class="dashboard-alerts-list">
+
+                        {% for alert in dashboard_alerts %}
+                        <div class="dashboard-alert-item" data-alert-type="{{ alert.alert_type }}">
+
+                            <div class="dashboard-alert-icon">
+                                {% if alert.alert_type == "out_of_stock" %}
+                                    Out
+                                {% elif alert.alert_type == "low_stock" %}
+                                    Low
+                                {% endif %}
+                            </div>
+
+                            <div class="dashboard-alert-content">
+
+                                <div class="dashboard-alert-title">
+                                    {% if alert.alert_type == "out_of_stock" %}
+                                        Out of Stock: {{ alert.name }}
+                                    {% elif alert.alert_type == "low_stock" %}
+                                        Low Stock: {{ alert.name }}
+                                    {% endif %}
+                                </div>
+
+                                <div class="dashboard-alert-description">
+                                    {% if alert.alert_type == "out_of_stock" %}
+                                        This product is currently unavailable in stock.
+                                    {% elif alert.alert_type == "low_stock" %}
+                                        Only {{ alert.stock_quantity }} units remaining.
+                                    {% endif %}
+                                </div>
+
+                            </div>
+
+                            <div class="dashboard-alert-status">
+                                {% if alert.alert_type == "out_of_stock" %}
+                                    Out of Stock
+                                {% elif alert.alert_type == "low_stock" %}
+                                    Low Stock
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="dashboard-empty-state">
+                        No active alerts right now.
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="dashboard-quick-actions-panel">
+
+                <div class="dashboard-quick-actions-header">
+                    <div class="dashboard-quick-actions-title-group">
+                        <h2 class="dashboard-section-title">Quick Actions</h2>
+
+                        <p class="dashboard-section-subtitle">
+                            Jump quickly to the most important inventory tasks.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="dashboard-quick-actions-body">
+                    <div class="dashboard-quick-actions-grid">
+
+                        <a href="{{ url_for('products.add_product_route') }}" class="dashboard-quick-action-card">
+                            <div class="dashboard-quick-action-icon">
+                            </div>
+
+                            <div class="dashboard-quick-action-content">
+                                <div class="dashboard-quick-action-title">
+                                    Add Product
+                                </div>
+
+                                <div class="dashboard-quick-action-description">
+                                    Create a new product entry.
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ url_for('inventory_transactions.add_inventory_transaction_route') }}" class="dashboard-quick-action-card">
+                            <div class="dashboard-quick-action-icon">
+                            </div>
+
+                            <div class="dashboard-quick-action-content">
+                                <div class="dashboard-quick-action-title">
+                                    New Transaction
+                                </div>
+
+                                <div class="dashboard-quick-action-description">
+                                    Record a new stock movement.
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ url_for('categories.categories') }}" class="dashboard-quick-action-card">
+                            <div class="dashboard-quick-action-icon">
+                            </div>
+
+                            <div class="dashboard-quick-action-content">
+                                <div class="dashboard-quick-action-title">
+                                    Manage Categories
+                                </div>
+
+                                <div class="dashboard-quick-action-description">
+                                    View and organize product categories.
+                                </div>
+                            </div>
+                        </a>
+
+                        <a href="{{ url_for('suppliers.suppliers') }}" class="dashboard-quick-action-card">
+                            <div class="dashboard-quick-action-icon">
+                            </div>
+
+                            <div class="dashboard-quick-action-content">
+                                <div class="dashboard-quick-action-title">
+                                    Manage Suppliers
+                                </div>
+
+                                <div class="dashboard-quick-action-description">
+                                    View and manage supplier records.
+                                </div>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

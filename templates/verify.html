@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}
+Verify
+{% endblock %}
+
+{% block content %}
+
+<div class="register-page">
+
+  <div class="register-info">
+
+        <div class="register-logo">
+            <img
+                src="{{ url_for('static', filename='images/logo.png') }}"
+                alt="InventoryPro Logo"
+            >
+        </div>
+
+        <div class="register-intro">
+            <h2>
+                Manage your inventory<br>
+                with <span>confidence.</span>
+            </h2>
+
+            <p>
+                Inventory Management System Pro helps you organize products,
+                track inventory, and manage suppliers from one centralized platform.
+            </p>
+        </div>
+
+        <div class="register-features">
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Product Management</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Inventory Tracking</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Supplier Management</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Secure Authentication</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Fast & Easy to Use</p>
+            </div>
+
+        </div>
+
+        <div class="register-illustration">
+            <img
+                src="{{ url_for('static', filename='images/register-illustration.png') }}"
+                alt="Inventory Management Illustration"
+            >
+        </div>
+
+    </div>
+
+    <div class="verify-container">
+        <div class="verify-card">
+
+          <div class="verify-header">
+            <h1>Verify your email</h1>
+            <p>We've sent a 6-digit verification code to your email.</p>
+          </div>
+
+            {% with messages = get_flashed_messages(with_categories=True) %}
+              {% if messages %}
+                <div class="auth-flash-container">
+                  {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+          <div class="verify-form">
+            <form action="{{ url_for('auth.verify') }}" method="POST">
+
+              <div class="form-group">
+                <label for="verification_code">Verification Code</label>
+                <input class="form-input" type="text" id="verification_code" name="verification_code" placeholder="Enter your 6-digit code" required>
+              </div>
+
+              <div class="form-actions">
+                <button class="form-button" type="submit">Verify</button>
+              </div>
+
+            </form>
+          </div>
+
+          <div class="verify-footer">
+            <p>
+              Back to
+              <a href="{{ url_for('auth.login') }}">Login</a>
+            </p>
+          </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

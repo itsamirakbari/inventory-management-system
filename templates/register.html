@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}
+Register
+{% endblock %}
+
+{% block content %}
+<div class="register-page">
+
+    <div class="register-info">
+
+        <div class="register-logo">
+            <img
+                src="{{ url_for('static', filename='images/logo.png') }}"
+                alt="InventoryPro Logo"
+            >
+        </div>
+
+        <div class="register-intro">
+            <h2>
+                Manage your inventory<br>
+                with <span>confidence.</span>
+            </h2>
+
+            <p>
+                Inventory Management System Pro helps you organize products,
+                track inventory, and manage suppliers from one centralized platform.
+            </p>
+        </div>
+
+        <div class="register-features">
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Product Management</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Inventory Tracking</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Supplier Management</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Secure Authentication</p>
+            </div>
+
+            <div class="feature-item">
+                <span>✓</span>
+                <p>Fast & Easy to Use</p>
+            </div>
+
+        </div>
+
+        <div class="register-illustration">
+            <img
+                src="{{ url_for('static', filename='images/register-illustration.png') }}"
+                alt="Inventory Management Illustration"
+            >
+        </div>
+
+    </div>
+
+    <div class="register-container">
+        <div class="register-card">
+
+            <div class="register-header">
+                <h1>Create account</h1>
+                <p>Create your account to get started.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=True) %}
+              {% if messages %}
+                <div class="auth-flash-container">
+                  {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                      {{ message }}
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+
+            <div class="register-form">
+                <form action="{{ url_for('auth.register') }}" method="POST">
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input class="form-input" type="text" id="username" name="username" placeholder="e.g. alex123" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input class="form-input" type="email" id="email" name="email" placeholder="name@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="password-field">
+                            <input class="form-input" type="password" id="password" name="password" placeholder="Create a secure password" required>
+                            <button type="button" class="password-toggle" data-target="password" aria-label="Show password">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password</label>
+                        <div class="password-field">
+                            <input class="form-input" type="password" id="confirm_password" name="confirm_password" placeholder="Repeat your password" required>
+                            <button type="button" class="password-toggle" data-target="confirm_password" aria-label="Show password">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 5C6.5 5 2.1 8.4 1 12c1.1 3.6 5.5 7 11 7s9.9-3.4 11-7c-1.1-3.6-5.5-7-11-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Zm0-2.2a1.8 1.8 0 1 0 0-3.6 1.8 1.8 0 0 0 0 3.6Z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="form-button" type="submit">Register</button>
+                    </div>
+
+                </form>
+            </div>
+
+            <div class="register-footer">
+                <p>
+                    Already have an account?
+                    <a href="{{ url_for('auth.login') }}">Login</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 320" role="img" aria-labelledby="title description">
+  <title id="title">Test Version stamp</title>
+  <desc id="description">A transparent blue-gray stamp reading Test Version.</desc>
+
+  <g
+    fill="none"
+    opacity="0.13"
+    stroke="#294968"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    transform="rotate(-5 500 160)"
+  >
+    <rect x="22" y="22" width="956" height="276" rx="70" stroke-width="14" opacity="0.76"/>
+    <rect x="45" y="45" width="910" height="230" rx="54" stroke-width="4" opacity="0.34"/>
+
+    <path d="M92 92h78M830 92h78M92 228h78M830 228h78" stroke-width="8" opacity="0.42"/>
+
+    <text
+      x="500"
+      y="190"
+      fill="#294968"
+      stroke="none"
+      text-anchor="middle"
+      font-family="Arial, Helvetica, sans-serif"
+      font-size="112"
+      font-weight="800"
+      letter-spacing="10"
+      opacity="0.82"
+    >TEST VERSION</text>
+  </g>
+</svg>

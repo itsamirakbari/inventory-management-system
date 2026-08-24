@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block title %}
+Categories
+{% endblock %}
+
+{% block content %}
+
+<div class="categories-page">
+    <div class="categories-header">
+        <div class="categories-header-content">
+            <div class="categories-header-main">
+                <div class="categories-header-badge">
+                    <div class="categories-header-icon">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <span>Inventory Structure</span>
+                </div>
+
+                <h1>Categories</h1>
+                <p>Manage your product categories in one place.</p>
+            </div>
+
+            <div class="categories-header-stats">
+                <div class="categories-stat-card">
+                    <div class="categories-stat-icon categories-stat-icon-orange">
+                        <i class="fa-solid fa-box-archive"></i>
+                    </div>
+                    <div class="categories-stat-value">{{ categories|length }}</div>
+                    <div class="categories-stat-label">Total Categories</div>
+                </div>
+
+                <div class="categories-stat-card">
+                    <div class="categories-stat-icon categories-stat-icon-blue">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                    <div class="categories-stat-value categories-stat-value-blue">Updated Today</div>
+                    <div class="categories-stat-label">Last updated</div>
+                </div>
+
+                <div class="categories-stat-card">
+                    <div class="categories-stat-icon categories-stat-icon-green">
+                        <i class="fa-solid fa-table-cells-large"></i>
+                    </div>
+                    <div class="categories-stat-value categories-stat-value-green">Organized Groups</div>
+                    <div class="categories-stat-label">Well structured</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="auth-flash-container">
+                {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="categories-content categories-content-full">
+        <div class="categories-table-section categories-table-section-full">
+            <div class="categories-table-card categories-table-card-full">
+                <div class="categories-table-header">
+                    <div class="categories-table-title">
+                        <div class="categories-table-icon">
+                            <i class="fa-regular fa-folder-open"></i>
+                        </div>
+                        <h2>All Categories</h2>
+                    </div>
+
+                    <div class="categories-table-tools">
+                        <div class="categories-count">
+                            {{ categories|length }} Categories
+                        </div>
+
+                        <a href="{{ url_for('categories.add_category_route') }}" class="categories-add-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add New Category</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="categories-search-bar">
+                    <div class="categories-search-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="categories-search"
+                            placeholder="Search categories by name or description..."
+                            aria-label="Search categories"
+                        >
+                    </div>
+                </div>
+
+                <div class="data-table-scroll">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                        {% if categories %}
+                            {% for category in categories %}
+                            <tr data-category-search="{{ (category.name ~ ' ' ~ category.description)|lower }}">
+                                {% if request.args.get("edit") == category.id|string %}
+                                    <td>
+                                        <input
+                                            type="text"
+                                            name="category_name"
+                                            value="{{ category.name }}"
+                                            form="update-category-{{ category.id }}"
+                                            required
+                                        >
+                                    </td>
+
+                                    <td>
+                                        <textarea
+                                            name="category_description"
+                                            rows="3"
+                                            form="update-category-{{ category.id }}"
+                                            required
+                                        >{{ category.description }}</textarea>
+                                    </td>
+
+                                    <td>
+                                        <div class="category-actions">
+                                            <button
+                                                type="submit"
+                                                form="update-category-{{ category.id }}"
+                                                class="action-btn edit-btn"
+                                                title="Save category"
+                                                aria-label="Save category"
+                                            >
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+
+                                            <a
+                                                href="{{ url_for('categories.categories') }}"
+                                                class="action-btn delete-btn"
+                                                title="Cancel edit"
+                                                aria-label="Cancel edit"
+                                            >
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </a>
+                                        </div>
+
+                                        <form
+                                            id="update-category-{{ category.id }}"
+                                            action="{{ url_for('categories.update_category_route', category_id=category.id) }}"
+                                            method="POST"
+                                        ></form>
+                                    </td>
+                                {% else %}
+                                    <td>{{ category.name }}</td>
+                                    <td>{{ category.description }}</td>
+
+                                    <td>
+                                        <div class="category-actions">
+                                            <a
+                                                href="{{ url_for('categories.categories', edit=category.id) }}"
+                                                class="action-btn edit-btn"
+                                                title="Edit category"
+                                                aria-label="Edit category"
+                                            >
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </a>
+
+                                            <form action="{{ url_for('categories.delete_category_route', category_id=category.id) }}" method="POST">
+                                                <button type="submit" class="action-btn delete-btn" title="Delete category" aria-label="Delete category">
+                                                    <i class="fa-regular fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr class="default-empty-row">
+                                <td colspan="3" class="empty-state">No categories available yet.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+
+                {% if categories %}
+                    <div class="categories-search-empty" id="categories-search-empty" hidden>
+                        No matching categories found.
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/categories.js') }}"></script>
+
+{% endblock %}

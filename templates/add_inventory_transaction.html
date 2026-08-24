@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Inventory Transaction
+{% endblock %}
+
+{% block content %}
+
+<div class="add-inventory-transaction-page">
+    <div class="add-inventory-transaction-shell">
+        <div class="add-inventory-transaction-header">
+            <div class="inventory-transactions-header-badge">
+                <div class="inventory-transactions-header-icon">
+                    <i class="fa-solid fa-plus-minus"></i>
+                </div>
+                <span>New Transaction</span>
+            </div>
+
+            <h1>Add Inventory Transaction</h1>
+            <p>Create a stock movement entry with type, reason, reference, and quantity details.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash-container">
+                    {% for category, message in messages %}
+                        <div class="auth-flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="inventory-transactions-form-card add-inventory-transaction-form-card">
+            <form action="{{ url_for('inventory_transactions.add_inventory_transaction_route') }}" method="POST">
+                <div class="inventory-transactions-form-header">
+                    <div class="inventory-transactions-form-title">
+                        <div class="inventory-transactions-form-icon">
+                            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                        </div>
+                        <h2>Transaction Information</h2>
+                    </div>
+                </div>
+
+                <div class="inventory-transactions-form-grid">
+                    <div class="form-group">
+                        <label for="transaction_type">Transaction Type <span class="required-mark">*</span></label>
+                        <select id="transaction_type" name="transaction_type" required>
+                            <option value="" disabled selected>Select transaction type</option>
+                            <option value="stock_in">Stock In</option>
+                            <option value="stock_out">Stock Out</option>
+                            <option value="adjustment_in">Adjustment In</option>
+                            <option value="adjustment_out">Adjustment Out</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product_id">Product <span class="required-mark">*</span></label>
+                        <select id="product_id" name="product_id" required>
+                            <option value="" disabled selected>Select product</option>
+                            {% for product in products %}
+                                <option value="{{ product.id }}">{{ product.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantity">Quantity <span class="required-mark">*</span></label>
+                        <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" min="1" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason">Reason <span class="required-mark">*</span></label>
+                        <select id="reason" name="reason" required>
+                            <option value="" disabled selected>Select reason</option>
+                            <option value="purchase">Purchase</option>
+                            <option value="sale">Sale</option>
+                            <option value="return_in">Return In</option>
+                            <option value="return_out">Return Out</option>
+                            <option value="damaged_goods">Damaged Goods</option>
+                            <option value="lost_goods">Lost Goods</option>
+                            <option value="recount_correction">Recount Correction</option>
+                            <option value="manual_adjustment">Manual Adjustment</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="transaction_reference">Transaction Reference <span class="required-mark">*</span></label>
+                        <input type="text" id="transaction_reference" name="transaction_reference" placeholder="Enter reference number or code" required>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="note">Note</label>
+                        <textarea id="note" name="note" placeholder="Enter optional note (required when reason is 'other')" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="add-inventory-transaction-actions">
+                    <a href="{{ url_for('inventory_transactions.inventory_transactions') }}" class="add-inventory-transaction-cancel">Back to Transactions</a>
+                    <button type="submit">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Transaction</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

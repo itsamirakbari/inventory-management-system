@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Product
+{% endblock %}
+
+{% block content %}
+
+<div class="add-product-page">
+    <div class="add-product-shell">
+        <div class="add-product-header">
+            <div class="products-header-badge">
+                <div class="products-header-icon">
+                    <i class="fa-solid fa-square-plus"></i>
+                </div>
+                <span>New Product</span>
+            </div>
+
+            <h1>Add New Product</h1>
+            <p>Create a new product with pricing, stock, category, and supplier details.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash-container">
+                    {% for category, message in messages %}
+                        <div class="auth-flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="products-form-card add-product-form-card">
+            <form action="{{ url_for('products.add_product_route') }}" method="POST">
+                <div class="products-form-header">
+                    <div class="products-form-title">
+                        <div class="products-form-icon">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <h2>Product Information</h2>
+                    </div>
+                </div>
+
+                <div class="products-form-grid">
+                    <div class="form-group">
+                        <label for="name">Product Name <span class="required-mark">*</span></label>
+                        <input type="text" id="name" name="name" placeholder="Enter product name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sku">SKU <span class="required-mark">*</span></label>
+                        <input type="text" id="sku" name="sku" placeholder="Enter unique SKU" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">Price <span class="required-mark">*</span></label>
+                        <input type="number" id="price" name="price" placeholder="Enter product price" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="stock_quantity">Stock Quantity <span class="required-mark">*</span></label>
+                        <input type="number" id="stock_quantity" name="stock_quantity" placeholder="Enter stock quantity" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category_id">Category <span class="required-mark">*</span></label>
+                        <select id="category_id" name="category_id" required>
+                            <option value="" disabled selected>Select category</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="supplier_id">Supplier <span class="required-mark">*</span></label>
+                        <select id="supplier_id" name="supplier_id" required>
+                            <option value="" disabled selected>Select supplier</option>
+                            {% for supplier in suppliers %}
+                                <option value="{{ supplier.id }}">{{ supplier.company_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="add-product-actions">
+                    <a href="{{ url_for('products.products') }}" class="add-product-cancel">Back to Products</a>
+                    <button type="submit">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Product</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

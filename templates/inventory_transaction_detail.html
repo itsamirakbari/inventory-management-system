@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}
+Transaction Details
+{% endblock %}
+
+{% block content %}
+
+<div class="add-inventory-transaction-page">
+    <div class="add-inventory-transaction-shell">
+        <div class="add-inventory-transaction-header">
+            <div class="inventory-transactions-header-badge">
+                <div class="inventory-transactions-header-icon">
+                    <i class="fa-regular fa-eye"></i>
+                </div>
+                <span>Transaction Details</span>
+            </div>
+
+            <h1>View Inventory Transaction</h1>
+            <p>Review the complete transaction information, including product, user, reason, and reference.</p>
+        </div>
+
+        <div class="transaction-detail-stats">
+            <div class="transaction-detail-stat-card transaction-detail-stat-card-orange">
+                <div class="transaction-detail-stat-icon">
+                    <i class="fa-solid fa-arrow-right-arrow-left"></i>
+                </div>
+                <div class="transaction-detail-stat-label">Transaction Type</div>
+                <div class="transaction-detail-stat-value">
+                    {{ transaction.transaction_type|replace('_', ' ')|title }}
+                </div>
+            </div>
+
+            <div class="transaction-detail-stat-card transaction-detail-stat-card-blue">
+                <div class="transaction-detail-stat-icon">
+                    <i class="fa-solid fa-cubes"></i>
+                </div>
+                <div class="transaction-detail-stat-label">Quantity</div>
+                <div class="transaction-detail-stat-value">
+                    {{ '+' if transaction.transaction_type in ['stock_in', 'adjustment_in'] else '-' }}{{ transaction.quantity }}
+                </div>
+            </div>
+
+            <div class="transaction-detail-stat-card transaction-detail-stat-card-green">
+                <div class="transaction-detail-stat-icon">
+                    <i class="fa-regular fa-calendar-check"></i>
+                </div>
+                <div class="transaction-detail-stat-label">Created At</div>
+                <div class="transaction-detail-stat-value transaction-detail-stat-value-small">
+                    {{ transaction.created_at.strftime('%d.%m.%Y') if transaction.created_at else '—' }}
+                </div>
+            </div>
+        </div>
+
+        <div class="inventory-transactions-form-card add-inventory-transaction-form-card">
+            <div class="inventory-transactions-form-header">
+                <div class="inventory-transactions-form-title">
+                    <div class="inventory-transactions-form-icon">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <h2>Transaction Overview</h2>
+                </div>
+            </div>
+
+            <div class="inventory-transactions-form-grid">
+                <div class="form-group">
+                    <label>Transaction Type</label>
+                    <div class="transaction-detail-readonly-badge">
+                        <span class="transaction-type-badge {{ transaction.transaction_type }}">
+                            {{ transaction.transaction_type|replace('_', ' ')|title }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <div class="transaction-detail-readonly-badge">
+                        <span class="transaction-quantity-badge {% if transaction.transaction_type in ['stock_in', 'adjustment_in'] %}positive{% else %}negative{% endif %}">
+                            {{ '+' if transaction.transaction_type in ['stock_in', 'adjustment_in'] else '-' }}{{ transaction.quantity }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Product</label>
+                    <input type="text" value="{{ product.name if product else 'Unknown Product' }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>User</label>
+                    <input type="text" value="{{ user.username if user else 'Unknown User' }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Reason</label>
+                    <input type="text" value="{{ transaction.reason|replace('_', ' ')|title }}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Reference</label>
+                    <div class="transaction-detail-readonly-badge">
+                        <span class="transaction-reference-badge">{{ transaction.transaction_reference }}</span>
+                    </div>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label>Created At</label>
+                    <input type="text" value="{{ transaction.created_at.strftime('%d.%m.%Y %H:%M') if transaction.created_at else '—' }}" readonly>
+                </div>
+
+                <div class="form-group form-group-full">
+                    <label>Note</label>
+                    <textarea readonly rows="4">{{ transaction.note if transaction.note else 'No note provided.' }}</textarea>
+                </div>
+            </div>
+
+            <div class="add-inventory-transaction-actions">
+                <a href="{{ url_for('inventory_transactions.inventory_transactions') }}" class="add-inventory-transaction-cancel">Back to Transactions</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
