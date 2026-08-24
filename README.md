@@ -64,7 +64,7 @@ Das vollständige Datenbankschema ist als [PDF-Dokument](docs/images/database_sc
 ### 1. Repository herunterladen
 
 ```bash
-git clone DEINE_REPOSITORY_URL
+git clone git@github.com:itsamirakbari/inventory-management-system.git
 cd inventory-management-system
 ```
 
