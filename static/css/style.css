@@ -600,16 +600,16 @@ footer {
     transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
+.home-presentation-contact {
+    font-size: 0.72rem;
+}
+
 .home-presentation-github:hover,
 .home-presentation-contact:hover {
     color: #ffffff;
     border-color: rgba(221, 214, 254, 0.34);
     background: rgba(255, 255, 255, 0.14);
     transform: translateY(-1px);
-}
-
-.home-presentation-contact {
-    font-size: 0.72rem;
 }
 
 .home-presentation-contact .fa-envelope {
@@ -660,6 +660,7 @@ footer {
 
     .home-presentation-creator {
         border-radius: 22px;
+        grid-template-columns: 42px minmax(0, 1fr);
     }
 
     .home-presentation-logo {
@@ -672,10 +673,6 @@ footer {
 
     .home-presentation-copy {
         grid-template-columns: 1fr;
-    }
-
-    .home-presentation-creator {
-        grid-template-columns: 42px minmax(0, 1fr);
     }
 
     .home-presentation-creator-links {
@@ -1508,7 +1505,6 @@ footer {
 .categories-form-card,
 .categories-table-card {
     border-radius: 24px;
-    padding: 20px;
     box-shadow:
         0 18px 42px rgba(63, 105, 88, 0.055),
         0 4px 12px rgba(15, 23, 42, 0.045),
@@ -1521,6 +1517,7 @@ footer {
         radial-gradient(circle at 0% 0%, rgba(255, 140, 26, 0.08), transparent 28%),
         linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(244, 249, 246, 0.92));
     width: 100%;
+    padding: 20px;
     display: flex;
     flex-direction: column;
 }
@@ -1534,6 +1531,7 @@ footer {
     width: 100%;
     min-width: 0;
     overflow-x: auto;
+    padding: 16px;
 }
 
 .categories-table-card-full {
@@ -1542,7 +1540,6 @@ footer {
 
 .categories-form-card h2,
 .categories-table-card h2 {
-    font-size: 1.6rem;
     font-weight: 700;
     color: #1e293b;
     margin: 0 0 22px 0;
@@ -1585,8 +1582,8 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 16px;
+    gap: 16px;
+    margin-bottom: 11px;
 }
 
 .categories-table-tools {
@@ -1600,19 +1597,19 @@ footer {
 .categories-table-title {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
 }
 
 .categories-table-icon {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, rgba(255, 247, 237, 0.98), rgba(237, 245, 240, 0.92));
     display: flex;
     align-items: center;
     justify-content: center;
     color: #5d8f77;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     flex-shrink: 0;
     box-shadow:
         0 7px 16px rgba(63, 105, 88, 0.085),
@@ -1622,10 +1619,11 @@ footer {
 .categories-table-header h2 {
     margin: 0;
     color: #3f6958;
+    font-size: 1.4rem;
 }
 
 .categories-count {
-    font-size: 0.95rem;
+    font-size: 0.86rem;
     font-weight: 500;
     color: #c2410c;
     white-space: nowrap;
@@ -1635,11 +1633,11 @@ footer {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 8px 13px;
     border-radius: 14px;
     background: linear-gradient(135deg, #4f806c, #679984);
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     font-weight: 700;
     text-decoration: none;
     box-shadow:
@@ -1657,7 +1655,7 @@ footer {
 }
 
 .categories-search-bar {
-    margin-bottom: 14px;
+    margin-bottom: 11px;
 }
 
 .categories-search-input {
@@ -1668,7 +1666,7 @@ footer {
     border: 1px solid rgba(188, 215, 201, 0.68);
     border-radius: 14px;
     padding: 0 14px;
-    min-height: 42px;
+    min-height: 38px;
     box-shadow:
         0 6px 14px rgba(63, 105, 88, 0.035),
         inset 0 1px 0 rgba(255, 255, 255, 0.92);
@@ -1695,7 +1693,7 @@ footer {
     outline: none;
     background: transparent;
     color: #1e293b;
-    font-size: 0.92rem;
+    font-size: 0.86rem;
     font-family: inherit;
 }
 
@@ -2348,7 +2346,6 @@ footer {
 .suppliers-form-card,
 .suppliers-table-card {
     border-radius: 24px;
-    padding: 20px;
     box-shadow:
         0 18px 42px rgba(103, 78, 135, 0.055),
         0 4px 12px rgba(15, 23, 42, 0.045),
@@ -2362,6 +2359,7 @@ footer {
         linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(250, 245, 255, 0.91));
     width: 100%;
     max-width: 320px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
 }
@@ -2375,6 +2373,7 @@ footer {
     width: 100%;
     min-width: 0;
     overflow-x: auto;
+    padding: 16px;
 }
 
 .suppliers-table-card-full {
@@ -2383,7 +2382,6 @@ footer {
 
 .suppliers-form-card h2,
 .suppliers-table-card h2 {
-    font-size: 1.6rem;
     font-weight: 700;
     color: #1e293b;
     margin: 0 0 22px 0;
@@ -2525,8 +2523,8 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    margin-bottom: 14px;
+    gap: 16px;
+    margin-bottom: 11px;
 }
 
 .suppliers-table-tools {
@@ -2540,19 +2538,19 @@ footer {
 .suppliers-table-title {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
 }
 
 .suppliers-table-icon {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: linear-gradient(135deg, rgba(255, 247, 237, 0.98), rgba(241, 237, 247, 0.92));
     display: flex;
     align-items: center;
     justify-content: center;
     color: #8061a6;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     flex-shrink: 0;
     box-shadow:
         0 7px 16px rgba(103, 78, 135, 0.085),
@@ -2562,10 +2560,11 @@ footer {
 .suppliers-table-header h2 {
     margin: 0;
     color: #684b86;
+    font-size: 1.4rem;
 }
 
 .suppliers-count {
-    font-size: 0.95rem;
+    font-size: 0.86rem;
     font-weight: 500;
     color: #c2410c;
     white-space: nowrap;
@@ -2575,11 +2574,11 @@ footer {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 14px;
+    padding: 8px 13px;
     border-radius: 14px;
     background: linear-gradient(135deg, #76549f, #8b68b2);
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 0.84rem;
     font-weight: 700;
     text-decoration: none;
     box-shadow:
@@ -2597,7 +2596,7 @@ footer {
 }
 
 .suppliers-search-bar {
-    margin-bottom: 14px;
+    margin-bottom: 11px;
 }
 
 .suppliers-search-input {
@@ -2608,7 +2607,7 @@ footer {
     border: 1px solid rgba(196, 181, 218, 0.58);
     border-radius: 14px;
     padding: 0 14px;
-    min-height: 42px;
+    min-height: 38px;
     box-shadow:
         0 6px 14px rgba(103, 78, 135, 0.035),
         inset 0 1px 0 rgba(255, 255, 255, 0.92);
@@ -2635,7 +2634,7 @@ footer {
     outline: none;
     background: transparent;
     color: #1e293b;
-    font-size: 0.92rem;
+    font-size: 0.86rem;
     font-family: inherit;
 }
 
@@ -4589,6 +4588,169 @@ footer {
     }
 }
 
+/* Shared compact desktop headers; placed after all list-page component rules. */
+@media (min-width: 761px) {
+    .products-header,
+    .categories-header,
+    .suppliers-header,
+    .inventory-transactions-header {
+        margin-bottom: 8px;
+        padding: 8px 12px 0;
+    }
+
+    .products-header-content,
+    .categories-header-content,
+    .suppliers-header-content,
+    .inventory-transactions-header-content {
+        flex-direction: row;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .products-header-main,
+    .categories-header-main,
+    .suppliers-header-main,
+    .inventory-transactions-header-main {
+        flex: 0 1 34%;
+        width: auto;
+    }
+
+    .products-header-badge,
+    .categories-header-badge,
+    .suppliers-header-badge,
+    .inventory-transactions-header-badge {
+        gap: 7px;
+        padding: 3px 9px;
+        margin-bottom: 5px;
+        font-size: 0.7rem;
+    }
+
+    .products-header-icon,
+    .categories-header-icon,
+    .suppliers-header-icon,
+    .inventory-transactions-header-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+    }
+
+    .products-header h1,
+    .categories-header h1,
+    .suppliers-header h1,
+    .inventory-transactions-header h1 {
+        margin-bottom: 3px;
+        font-size: 1.75rem;
+        line-height: 1;
+    }
+
+    .products-header p,
+    .categories-header p,
+    .suppliers-header p,
+    .inventory-transactions-header p {
+        font-size: 0.78rem;
+        line-height: 1.25;
+    }
+
+    .products-header-stats,
+    .categories-header-stats,
+    .suppliers-header-stats,
+    .inventory-transactions-header-stats {
+        flex: 1 1 0;
+        width: auto;
+        gap: 8px;
+    }
+
+    .products-stat-card,
+    .categories-stat-card,
+    .suppliers-stat-card,
+    .inventory-transactions-stat-card {
+        height: 56px;
+        padding: 5px 10px;
+        border-radius: 18px;
+    }
+
+    .products-stat-icon,
+    .categories-stat-icon,
+    .suppliers-stat-icon,
+    .inventory-transactions-stat-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+    }
+}
+
+/* Keep Transactions filters and search below 30% of the table card on desktop. */
+@media (min-width: 981px) {
+    .inventory-transactions-filters {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: end;
+        gap: 8px;
+        margin-bottom: 8px;
+        padding: 6px 8px;
+        border-radius: 14px;
+    }
+
+    .inventory-transactions-filter-grid {
+        gap: 8px;
+    }
+
+    .inventory-transactions-filter-group {
+        gap: 3px;
+    }
+
+    .inventory-transactions-filter-group label {
+        font-size: 0.7rem;
+        line-height: 1;
+    }
+
+    .inventory-transactions-filter-group input,
+    .inventory-transactions-filter-group select {
+        min-height: 32px;
+        padding: 5px 8px;
+        border-radius: 10px;
+        font-size: 0.76rem;
+    }
+
+    .inventory-transactions-filter-actions {
+        align-items: flex-end;
+        gap: 6px;
+        flex-wrap: nowrap;
+    }
+
+    .inventory-transactions-filter-reset,
+    .inventory-transactions-filter-apply {
+        min-height: 32px;
+        padding: 5px 9px;
+        border-radius: 10px;
+        font-size: 0.72rem;
+    }
+
+    .inventory-transactions-filter-reset {
+        min-width: 82px;
+    }
+
+    .inventory-transactions-filter-apply {
+        min-width: 104px;
+        gap: 6px;
+    }
+
+    .inventory-transactions-search-bar {
+        margin-bottom: 8px;
+    }
+
+    .inventory-transactions-search-input {
+        min-height: 34px;
+        padding: 0 10px;
+        gap: 8px;
+        border-radius: 12px;
+    }
+
+    .inventory-transactions-search-input input {
+        font-size: 0.78rem;
+    }
+}
+
 .inventory-transactions-form-card {
     border-radius: 24px;
     padding: 20px;
@@ -5284,6 +5446,21 @@ footer {
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
+.dashboard-section-title {
+    margin: 0 0 4px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.2;
+    color: #1e293b;
+}
+
+.dashboard-section-subtitle {
+    margin: 0;
+    font-size: 0.66rem;
+    line-height: 1.22;
+    color: #64748b;
+}
+
 .dashboard-alerts-panel .dashboard-section-title {
     color: #1d4ed8;
 }
@@ -5309,21 +5486,6 @@ footer {
 .dashboard-alerts-title-group,
 .dashboard-quick-actions-title-group {
     min-width: 0;
-}
-
-.dashboard-section-title {
-    margin: 0 0 4px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    line-height: 1.2;
-    color: #1e293b;
-}
-
-.dashboard-section-subtitle {
-    margin: 0;
-    font-size: 0.66rem;
-    line-height: 1.22;
-    color: #64748b;
 }
 
 .dashboard-link-button {
@@ -5855,6 +6017,89 @@ footer {
     }
 }
 
+/* Keep Alerts and Quick Actions within roughly 35% of the desktop main area. */
+@media (min-width: 761px) {
+    .dashboard-overview-row {
+        min-height: 0;
+        height: 176px;
+        gap: 8px;
+    }
+
+    .dashboard-alerts-panel,
+    .dashboard-quick-actions-panel {
+        padding: 8px 10px;
+        gap: 4px;
+    }
+
+    .dashboard-alerts-panel .dashboard-link-button {
+        padding: 5px 10px;
+    }
+
+    .dashboard-alerts-list {
+        max-height: none;
+        gap: 4px;
+    }
+
+    .dashboard-alert-item {
+        grid-template-columns: 30px minmax(0, 1fr) auto;
+        flex-basis: 38px;
+        gap: 6px;
+        padding: 5px 8px;
+        border-radius: 11px;
+    }
+
+    .dashboard-alert-icon {
+        width: 26px;
+        height: 26px;
+        border-radius: 9px;
+        font-size: 0.58rem;
+    }
+
+    .dashboard-alert-title {
+        margin-bottom: 1px;
+        font-size: 0.64rem;
+        line-height: 1.18;
+    }
+
+    .dashboard-alert-description {
+        font-size: 0.58rem;
+        line-height: 1.18;
+    }
+
+    .dashboard-alert-status {
+        padding: 3px 6px;
+        font-size: 0.56rem;
+    }
+
+    .dashboard-quick-actions-grid {
+        gap: 6px;
+    }
+
+    .dashboard-quick-action-card {
+        min-height: 0;
+        gap: 6px;
+        padding: 6px;
+        border-radius: 11px;
+    }
+
+    .dashboard-quick-action-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
+    }
+
+    .dashboard-quick-action-title {
+        margin-bottom: 2px;
+        font-size: 0.7rem;
+        line-height: 1.18;
+    }
+
+    .dashboard-quick-action-description {
+        font-size: 0.58rem;
+        line-height: 1.2;
+    }
+}
+
 /* =========================
    Profile Page
 ========================= */
@@ -6226,20 +6471,20 @@ footer {
     background: linear-gradient(135deg, #d97706, #f59e0b);
 }
 
-.profile-email-card .form-button:hover {
-    background: linear-gradient(135deg, #b45309, #d97706);
-}
-
 .profile-verification-card .form-button {
     background: linear-gradient(135deg, #2563eb, #3b82f6);
 }
 
-.profile-verification-card .form-button:hover {
-    background: linear-gradient(135deg, #1d4ed8, #2563eb);
-}
-
 .profile-password-card .form-button {
     background: linear-gradient(135deg, #6d28d9, #8b5cf6);
+}
+
+.profile-email-card .form-button:hover {
+    background: linear-gradient(135deg, #b45309, #d97706);
+}
+
+.profile-verification-card .form-button:hover {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
 }
 
 .profile-password-card .form-button:hover {
@@ -6307,6 +6552,113 @@ footer {
 
     .profile-overview-details {
         text-align: left;
+    }
+}
+
+/* Match the compact layout and control sizing used by the other app pages. */
+@media (min-width: 761px) {
+    .profile-page {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        row-gap: 12px;
+    }
+
+    .profile-hero {
+        grid-column: 1;
+        grid-row: auto;
+        padding: 8px 12px 0;
+        gap: 0;
+    }
+
+    .profile-hero-badge {
+        margin-bottom: 5px;
+        padding: 3px 9px;
+        gap: 7px;
+        font-size: 0.7rem;
+    }
+
+    .profile-hero-badge i {
+        width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+    }
+
+    .profile-hero-content h1 {
+        margin-bottom: 3px;
+        font-size: 1.75rem;
+        line-height: 1;
+    }
+
+    .profile-hero-content p {
+        font-size: 0.78rem;
+        line-height: 1.25;
+    }
+
+    .profile-flash-container {
+        grid-column: 1 / -1;
+    }
+
+    .profile-overview-card {
+        grid-column: 1;
+        grid-row: auto;
+        grid-template-columns: 42px minmax(130px, 0.55fr) minmax(0, 2fr);
+        gap: 10px;
+        padding: 8px 10px;
+    }
+
+    .profile-overview-icon {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        font-size: 1rem;
+    }
+
+    .profile-overview-heading h2 {
+        font-size: 0.96rem;
+    }
+
+    .profile-overview-details {
+        grid-column: auto;
+        gap: 6px;
+    }
+
+    .profile-detail-item {
+        padding: 7px 8px;
+        border-radius: 11px;
+    }
+
+    .profile-detail-item strong {
+        margin-top: 2px;
+        font-size: 0.68rem;
+    }
+
+    .profile-settings-grid {
+        grid-column: 1 / -1;
+        gap: 10px;
+    }
+
+    .profile-settings-card {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .profile-settings-form {
+        gap: 8px;
+    }
+
+    .profile-settings-card .form-group {
+        gap: 4px;
+    }
+
+    .profile-settings-card .form-group input {
+        min-height: 38px;
+        padding: 8px 38px 8px 10px;
+    }
+
+    .profile-settings-card .form-button {
+        min-height: 38px;
+        padding: 8px 13px;
+        font-size: 0.76rem;
     }
 }
 
@@ -6920,6 +7272,139 @@ footer {
     .auth-body .verify-card,
     .auth-body .forgot-password-card {
         min-height: 320px;
+    }
+}
+
+/* Wide laptop screens have enough horizontal space for two columns, but much
+   less vertical space than a desktop monitor. Keep the desktop composition
+   while removing the upward offsets that previously clipped the brand logo. */
+@media (max-height: 720px) and (min-width: 901px) {
+    .auth-body .register-page {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        gap: 32px;
+    }
+
+    .auth-body .register-info {
+        height: 100%;
+        padding: 2px 0;
+    }
+
+    .auth-body .register-logo,
+    .auth-body .register-intro,
+    .auth-body .register-features {
+        transform: none;
+    }
+
+    .auth-body .register-logo {
+        margin: 0 0 2px;
+    }
+
+    .auth-body .register-logo img {
+        width: 180px;
+    }
+
+    .auth-body .register-intro h2 {
+        margin: -22px 0 0;
+        font-size: 1.65rem;
+    }
+
+    .auth-body .register-intro p {
+        margin: 5px 0;
+        max-width: 500px;
+        font-size: 0.78rem;
+        line-height: 1.45;
+    }
+
+    .auth-body .register-features {
+        gap: 5px;
+    }
+
+    .auth-body .feature-item,
+    .auth-body .feature-item:nth-child(5) {
+        gap: 10px;
+    }
+
+    .auth-body .feature-item span {
+        width: 25px;
+        height: 25px;
+        font-size: 0.76rem;
+    }
+
+    .auth-body .feature-item p {
+        font-size: 0.8rem;
+    }
+
+    .auth-body .register-illustration img {
+        max-width: 245px;
+        max-height: 145px;
+    }
+
+    .auth-body .register-card,
+    .auth-body .login-card,
+    .auth-body .verify-card,
+    .auth-body .forgot-password-card,
+    .auth-body .reset-password-card {
+        padding: 14px 20px;
+    }
+
+    .auth-body .login-card {
+        min-height: 390px;
+    }
+
+    .auth-body .register-card {
+        min-height: 450px;
+    }
+
+    .auth-body .reset-password-card {
+        min-height: 400px;
+    }
+
+    .auth-body .verify-card,
+    .auth-body .forgot-password-card {
+        min-height: 280px;
+    }
+
+    .auth-body .login-header,
+    .auth-body .register-header,
+    .auth-body .verify-header,
+    .auth-body .forgot-password-header,
+    .auth-body .reset-password-header {
+        margin-bottom: 10px;
+    }
+
+    .auth-body .login-header h1,
+    .auth-body .register-header h1,
+    .auth-body .verify-header h1,
+    .auth-body .forgot-password-header h1,
+    .auth-body .reset-password-header h1 {
+        font-size: 1.55rem;
+    }
+
+    .auth-body .register-form form,
+    .auth-body .login-form form,
+    .auth-body .verify-form form,
+    .auth-body .forgot-password-form form,
+    .auth-body .reset-password-form form {
+        gap: 6px;
+    }
+
+    .auth-body .form-group {
+        gap: 3px;
+    }
+
+    .auth-body .form-group input {
+        min-height: 38px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .auth-body .register-footer,
+    .auth-body .login-footer,
+    .auth-body .verify-footer,
+    .auth-body .forgot-password-footer,
+    .auth-body .reset-password-footer {
+        margin-top: 6px;
     }
 }
 
