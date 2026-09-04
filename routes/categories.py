@@ -14,8 +14,20 @@ logger = logging.getLogger(LOGGER_NAME)
 @categories_bp.route("/", methods=["GET"])
 @login_required
 def categories():
-    categories_list = get_all_categories()
-    return render_template("categories.html", categories=categories_list)
+    try:
+        categories_list = get_all_categories()
+
+        return render_template("categories.html", categories=categories_list)
+
+    except mysql.connector.Error:
+        flash("Database error. Please try again.", "error")
+        logger.exception(f"Database error while loading categories | User: {session['user']['username']}")
+        return redirect(url_for("dashboard.dashboard"))
+
+    except Exception:
+        flash("An unexpected error occurred.", "error")
+        logger.exception(f"Unexpected error while loading categories | User: {session['user']['username']}")
+        return redirect(url_for("dashboard.dashboard"))
 
 
 @categories_bp.route("/add", methods=["GET", "POST"])
@@ -33,52 +45,54 @@ def add_category_route():
 
     category_name = category_name.title()
 
-    existing_category = get_category_by_name(category_name)
-
-    if existing_category:
-        flash(f"Category '{category_name}' already exists.", "error")
-        return redirect(url_for("categories.add_category_route"))
-
     try:
+        existing_category = get_category_by_name(category_name)
+
+        if existing_category:
+            flash(f"Category '{category_name}' already exists.", "error")
+            return redirect(url_for("categories.add_category_route"))
+
         create_category(category_name, category_description)
+
         flash(f"Category '{category_name}' created successfully.", "success")
-        logger.info(f"Category '{category_name}' created successfully. | User: {session['user']['username']}")
+        logger.info(f"Category created successfully | Category: '{category_name}' | User: {session['user']['username']}")
         return redirect(url_for("categories.categories"))
 
     except mysql.connector.Error:
         flash("Database error. Please try again.", "error")
-        logger.exception(f"Database error while creating category | User: {session['user']['username']} | Category: '{category_name}'")
+        logger.exception(f"Database error while creating category | Category: '{category_name}' | User: {session['user']['username']}")
         return redirect(url_for("categories.add_category_route"))
 
     except Exception:
         flash("An unexpected error occurred.", "error")
-        logger.exception(f"Unexpected error while creating category | User: {session['user']['username']} | Category: '{category_name}'")
+        logger.exception(f"Unexpected error while creating category | Category: '{category_name}' | User: {session['user']['username']}")
         return redirect(url_for("categories.add_category_route"))
 
 
 @categories_bp.route("/delete/<int:category_id>", methods=["POST"])
 @login_required
 def delete_category_route(category_id):
-    category = get_category_by_id(category_id)
-
-    if not category:
-        flash("Category not found.", "error")
-        return redirect(url_for("categories.categories"))
-
     try:
+        category = get_category_by_id(category_id)
+
+        if not category:
+            flash("Category not found.", "error")
+            return redirect(url_for("categories.categories"))
+
         delete_category(category_id)
+
         flash(f"Category '{category['name']}' deleted successfully.", "success")
-        logger.info(f"Category '{category['name']}' deleted successfully. | User: {session['user']['username']}")
+        logger.info(f"Category deleted successfully | Category ID: {category_id} | Category: '{category['name']}' | User: {session['user']['username']}")
         return redirect(url_for("categories.categories"))
 
     except mysql.connector.Error:
         flash("Database error. Please try again.", "error")
-        logger.exception(f"Database error while deleting category | User: {session['user']['username']} | Category ID: {category_id} | Category: '{category['name']}'")
+        logger.exception(f"Database error while deleting category | Category ID: {category_id} | User: {session['user']['username']}")
         return redirect(url_for("categories.categories"))
 
     except Exception:
         flash("An unexpected error occurred.", "error")
-        logger.exception(f"Unexpected error while deleting category | User: {session['user']['username']} | Category ID: {category_id} | Category: '{category['name']}'")
+        logger.exception(f"Unexpected error while deleting category | Category ID: {category_id} | User: {session['user']['username']}")
         return redirect(url_for("categories.categories"))
 
 
@@ -94,31 +108,36 @@ def update_category_route(category_id):
 
     category_name = category_name.title()
 
-    category = get_category_by_id(category_id)
-
-    if not category:
-        flash("Category not found.", "error")
-        return redirect(url_for("categories.categories"))
-
-    existing_category = get_category_by_name(category_name)
-
-    if existing_category and existing_category["id"] != category_id:
-        flash(f"Category '{category_name}' already exists.", "error")
-        return redirect(url_for("categories.categories"))
-
     try:
-        update_category(category_id, category_name, category_description)
+        category = get_category_by_id(category_id)
+
+        if not category:
+            flash("Category not found.", "error")
+            return redirect(url_for("categories.categories"))
+
+        existing_category = get_category_by_name(category_name)
+
+        if (existing_category and existing_category["id"] != category_id):
+            flash(f"Category '{category_name}' already exists.", "error")
+            return redirect(url_for("categories.categories"))
+
+        update_category(
+            category_id,
+            category_name,
+            category_description
+        )
+
         flash(f"Category '{category_name}' updated successfully.", "success")
-        logger.info(f"Category updated successfully | Old Name: '{category['name']}' | New Name: '{category_name}' | User: {session['user']['username']}")
+        logger.info(f"Category updated successfully | Category ID: {category_id} | Old Name: '{category['name']}' | New Name: '{category_name}' | User: {session['user']['username']}")
         return redirect(url_for("categories.categories"))
 
     except mysql.connector.Error:
         flash("Database error. Please try again.", "error")
-        logger.exception(f"Database error while updating category | User: {session['user']['username']} | Category ID: {category_id} | Old Name: '{category['name']}' | New Name: '{category_name}'")
+        logger.exception(f"Database error while updating category | Category ID: {category_id} | New Name: '{category_name}' | User: {session['user']['username']}")
         return redirect(url_for("categories.categories"))
 
     except Exception:
         flash("An unexpected error occurred.", "error")
-        logger.exception(f"Unexpected error while updating category | User: {session['user']['username']} | Category ID: {category_id} | Old Name: '{category['name']}' | New Name:' {category_name}'")
+        logger.exception(f"Unexpected error while updating category | Category ID: {category_id} | New Name: '{category_name}' | User: {session['user']['username']}")
         return redirect(url_for("categories.categories"))
 

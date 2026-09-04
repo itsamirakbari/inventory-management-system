@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Customer
+{% endblock %}
+
+{% block content %}
+
+<div class="add-customer-page">
+    <div class="add-customer-shell">
+        <div class="add-customer-header">
+            <div class="customers-header-badge">
+                <div class="customers-header-icon">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <span>New Customer</span>
+            </div>
+
+            <h1>Add New Customer</h1>
+            <p>Create a new customer with contact and address information.</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash-container">
+                    {% for category, message in messages %}
+                        <div class="auth-flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="customers-form-card add-customer-form-card">
+            <form action="{{ url_for('customers.add_customer_route') }}" method="POST">
+                <div class="customers-form-header">
+                    <div class="customers-form-title">
+                        <div class="customers-form-icon">
+                            <i class="fa-solid fa-address-card"></i>
+                        </div>
+                        <h2>Customer Information</h2>
+                    </div>
+                </div>
+
+                <div class="customers-form-grid">
+                    <div class="form-group">
+                        <label for="customer_name">Customer Name <span class="required-mark">*</span></label>
+                        <input type="text" id="customer_name" name="customer_name" placeholder="Enter customer or company name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_person">Contact Person</label>
+                        <input type="text" id="contact_person" name="contact_person" placeholder="Enter contact person name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter customer email address">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" name="phone" placeholder="Enter phone number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="street">Street <span class="required-mark">*</span></label>
+                        <input type="text" id="street" name="street" placeholder="Enter street name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="house_number">House Number <span class="required-mark">*</span></label>
+                        <input type="text" id="house_number" name="house_number" placeholder="Enter house number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postal_code">Postal Code <span class="required-mark">*</span></label>
+                        <input type="text" id="postal_code" name="postal_code" placeholder="Enter postal code" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City <span class="required-mark">*</span></label>
+                        <input type="text" id="city" name="city" placeholder="Enter city" required>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="country">Country <span class="required-mark">*</span></label>
+                        <input type="text" id="country" name="country" placeholder="Enter country" required>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" placeholder="Enter optional customer description" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="add-customer-actions">
+                    <a href="{{ url_for('customers.customers') }}" class="add-customer-cancel">Back to Customers</a>
+                    <button type="submit">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Customer</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -7,7 +7,9 @@ from routes.auth import auth_bp
 from routes.dashboard import dashboard_bp
 from routes.categories import categories_bp
 from routes.suppliers import suppliers_bp
+from routes.customers import customers_bp
 from routes.products import products_bp
+from routes.invoices import invoices_bp
 from routes.inventory_transactions import inventory_transactions_bp
 from routes.profile import profile_bp
 
@@ -23,7 +25,9 @@ app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(dashboard_bp, url_prefix="/dashboard")
 app.register_blueprint(categories_bp, url_prefix="/categories")
 app.register_blueprint(suppliers_bp, url_prefix="/suppliers")
+app.register_blueprint(customers_bp, url_prefix="/customers")
 app.register_blueprint(products_bp, url_prefix="/products")
+app.register_blueprint(invoices_bp, url_prefix="/invoices")
 app.register_blueprint(inventory_transactions_bp, url_prefix="/inventory_transactions")
 app.register_blueprint(profile_bp, url_prefix="/profile")
 

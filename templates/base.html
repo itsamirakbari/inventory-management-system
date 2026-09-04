@@ -84,6 +84,22 @@
         </a>
 
         <a
+          href="{{ url_for('customers.customers') }}"
+          class="{% if request.endpoint in ['customers.customers', 'customers.add_customer_route'] %}active{% endif %}"
+        >
+          <i class="fa-solid fa-users"></i>
+          <span>Customers</span>
+        </a>
+
+        <a
+          href="{{ url_for('invoices.invoices') }}"
+          class="{% if request.endpoint in ['invoices.invoices', 'invoices.add_invoice_route', 'invoices.invoice_detail_route'] %}active{% endif %}"
+        >
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Invoices</span>
+        </a>
+
+        <a
           href="{{ url_for('inventory_transactions.inventory_transactions') }}"
           class="{% if request.endpoint in ['inventory_transactions.inventory_transactions', 'inventory_transactions.add_inventory_transaction_route', 'inventory_transactions.inventory_transaction_detail'] %}active{% endif %}"
         >

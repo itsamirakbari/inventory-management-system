@@ -6,6 +6,9 @@ Suppliers
 
 {% block content %}
 
+{% set suppliers_with_email = suppliers|selectattr('email')|list %}
+{% set supplier_countries = suppliers|map(attribute='country')|select|unique|list %}
+
 <div class="suppliers-page">
     <div class="suppliers-header">
         <div class="suppliers-header-content">
@@ -34,16 +37,16 @@ Suppliers
                     <div class="suppliers-stat-icon suppliers-stat-icon-blue">
                         <i class="fa-regular fa-address-card"></i>
                     </div>
-                    <div class="suppliers-stat-value suppliers-stat-value-blue">Contact Ready</div>
-                    <div class="suppliers-stat-label">Partner details available</div>
+                    <div class="suppliers-stat-value">{{ suppliers_with_email|length }}</div>
+                    <div class="suppliers-stat-label">Email Contacts</div>
                 </div>
 
                 <div class="suppliers-stat-card">
                     <div class="suppliers-stat-icon suppliers-stat-icon-green">
                         <i class="fa-solid fa-earth-europe"></i>
                     </div>
-                    <div class="suppliers-stat-value suppliers-stat-value-green">Supply Coverage</div>
-                    <div class="suppliers-stat-label">Structured network</div>
+                    <div class="suppliers-stat-value">{{ supplier_countries|length }}</div>
+                    <div class="suppliers-stat-label">Countries Represented</div>
                 </div>
             </div>
         </div>
@@ -97,103 +100,128 @@ Suppliers
                 </div>
 
                 <div class="data-table-scroll">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Company</th>
-                        <th>Contact</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>City</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
 
-                    <tbody>
-                    {% if suppliers %}
-                        {% for supplier in suppliers %}
-                        <tr data-supplier-search="{{ (supplier.company_name ~ ' ' ~ supplier.contact_person ~ ' ' ~ supplier.email ~ ' ' ~ supplier.city)|lower }}">
-                            {% if request.args.get("edit") == supplier.id|string %}
-                                <td>
-                                    <input type="text" name="company_name" value="{{ supplier.company_name }}" form="update-supplier-{{ supplier.id }}" required>
-                                </td>
-                                <td>
-                                    <input type="text" name="contact_person" value="{{ supplier.contact_person }}" form="update-supplier-{{ supplier.id }}" required>
-                                </td>
-                                <td>
-                                    <input type="email" name="email" value="{{ supplier.email }}" form="update-supplier-{{ supplier.id }}" required>
-                                </td>
-                                <td>
-                                    <input type="text" name="phone" value="{{ supplier.phone }}" form="update-supplier-{{ supplier.id }}" required>
-                                </td>
-                                <td>
-                                    <input type="text" name="city" value="{{ supplier.city }}" form="update-supplier-{{ supplier.id }}" required>
-                                </td>
-                                <td>
-                                    <div class="supplier-actions">
-                                        <button type="submit" form="update-supplier-{{ supplier.id }}" class="action-btn edit-btn" title="Save supplier" aria-label="Save supplier">
-                                            <i class="fa-solid fa-check"></i>
-                                        </button>
-                                        <a href="{{ url_for('suppliers.suppliers') }}" class="action-btn delete-btn" title="Cancel edit" aria-label="Cancel edit">
-                                            <i class="fa-solid fa-xmark"></i>
-                                        </a>
-                                    </div>
-
-                                    <form id="update-supplier-{{ supplier.id }}" action="{{ url_for('suppliers.update_supplier_route', supplier_id=supplier.id) }}" method="POST">
-                                        <input type="hidden" name="street" value="{{ supplier.street }}">
-                                        <input type="hidden" name="house_number" value="{{ supplier.house_number }}">
-                                        <input type="hidden" name="postal_code" value="{{ supplier.postal_code }}">
-                                        <input type="hidden" name="country" value="{{ supplier.country }}">
-                                        <input type="hidden" name="description" value="{{ supplier.description }}">
-                                    </form>
-                                </td>
-                            {% else %}
-                                <td>{{ supplier.company_name }}</td>
-                                <td>
-                                    <span class="supplier-contact-name">
-                                        <i class="fa-regular fa-user"></i>
-                                        <span>{{ supplier.contact_person }}</span>
-                                    </span>
-                                </td>
-                                <td>
-                                    <a href="mailto:{{ supplier.email }}" class="supplier-email-link">
-                                        {{ supplier.email }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="tel:{{ supplier.phone|replace(' ', '') }}" class="supplier-phone-link">
-                                        {{ supplier.phone }}
-                                    </a>
-                                </td>
-                                <td>{{ supplier.city }}</td>
-                                <td>
-                                    <div class="supplier-actions">
-                                        <a href="{{ url_for('suppliers.suppliers', edit=supplier.id) }}" class="action-btn edit-btn" title="Edit supplier" aria-label="Edit supplier">
-                                            <i class="fa-regular fa-pen-to-square"></i>
-                                        </a>
-                                        <form action="{{ url_for('suppliers.delete_supplier_route', supplier_id=supplier.id) }}" method="POST">
-                                            <button type="submit" class="action-btn delete-btn" title="Delete supplier" aria-label="Delete supplier">
-                                                <i class="fa-regular fa-trash-can"></i>
+                        <tbody>
+                        {% if suppliers %}
+                            {% for supplier in suppliers %}
+                            <tr data-supplier-search="{{ ((supplier.company_name or '') ~ ' ' ~ (supplier.contact_person or '') ~ ' ' ~ (supplier.email or '') ~ ' ' ~ (supplier.phone or '') ~ ' ' ~ (supplier.street or '') ~ ' ' ~ (supplier.house_number or '') ~ ' ' ~ (supplier.postal_code or '') ~ ' ' ~ (supplier.city or '') ~ ' ' ~ (supplier.country or '') ~ ' ' ~ (supplier.description or ''))|lower }}">
+                                {% if request.args.get("edit") == supplier.id|string %}
+                                    <td>
+                                        <input type="text" name="company_name" value="{{ supplier.company_name or '' }}" form="update-supplier-{{ supplier.id }}" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="contact_person" value="{{ supplier.contact_person or '' }}" form="update-supplier-{{ supplier.id }}" required>
+                                    </td>
+                                    <td>
+                                        <input type="email" name="email" value="{{ supplier.email or '' }}" form="update-supplier-{{ supplier.id }}" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="phone" value="{{ supplier.phone or '' }}" form="update-supplier-{{ supplier.id }}" required>
+                                    </td>
+                                    <td>
+                                        <div class="supplier-address-edit">
+                                            <input type="text" name="street" value="{{ supplier.street or '' }}" form="update-supplier-{{ supplier.id }}" placeholder="Street" aria-label="Street" required>
+                                            <input type="text" name="house_number" value="{{ supplier.house_number or '' }}" form="update-supplier-{{ supplier.id }}" placeholder="No." aria-label="House number" required>
+                                            <input type="text" name="postal_code" value="{{ supplier.postal_code or '' }}" form="update-supplier-{{ supplier.id }}" placeholder="Postal code" aria-label="Postal code" required>
+                                            <input type="text" name="city" value="{{ supplier.city or '' }}" form="update-supplier-{{ supplier.id }}" placeholder="City" aria-label="City" required>
+                                            <input type="text" name="country" value="{{ supplier.country or '' }}" form="update-supplier-{{ supplier.id }}" placeholder="Country" aria-label="Country" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <textarea name="description" form="update-supplier-{{ supplier.id }}" rows="3" required>{{ supplier.description or '' }}</textarea>
+                                    </td>
+                                    <td>
+                                        <div class="supplier-actions">
+                                            <button type="submit" form="update-supplier-{{ supplier.id }}" class="action-btn edit-btn" title="Save supplier" aria-label="Save supplier">
+                                                <i class="fa-solid fa-check"></i>
                                             </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr class="default-empty-row">
-                            <td colspan="6" class="empty-state">No suppliers available yet.</td>
-                        </tr>
-                    {% endif %}
-                    </tbody>
-                </table>
+                                            <a href="{{ url_for('suppliers.suppliers') }}" class="action-btn delete-btn" title="Cancel edit" aria-label="Cancel edit">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </a>
+                                        </div>
 
-                {% if suppliers %}
-                    <div class="suppliers-search-empty" id="suppliers-search-empty" hidden>
-                        No matching suppliers found.
-                    </div>
-                {% endif %}
+                                        <form id="update-supplier-{{ supplier.id }}" action="{{ url_for('suppliers.update_supplier_route', supplier_id=supplier.id) }}" method="POST"></form>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <span class="supplier-name-cell">
+                                            <i class="fa-regular fa-user"></i>
+                                            <span>{{ supplier.company_name }}</span>
+                                        </span>
+                                    </td>
+                                    <td>{{ supplier.contact_person or '—' }}</td>
+                                    <td>
+                                        {% if supplier.email %}
+                                            <a href="mailto:{{ supplier.email }}" class="supplier-email-link">
+                                                {{ supplier.email }}
+                                            </a>
+                                        {% else %}
+                                            <span class="supplier-empty-value">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if supplier.phone %}
+                                            <a href="tel:{{ supplier.phone|replace(' ', '') }}" class="supplier-phone-link">
+                                                {{ supplier.phone }}
+                                            </a>
+                                        {% else %}
+                                            <span class="supplier-empty-value">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="supplier-address">
+                                            {{ supplier.street }} {{ supplier.house_number }},
+                                            {{ supplier.postal_code }} {{ supplier.city }},
+                                            {{ supplier.country }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if supplier.description %}
+                                            <span class="supplier-description">{{ supplier.description }}</span>
+                                        {% else %}
+                                            <span class="supplier-empty-value">—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="supplier-actions">
+                                            <a href="{{ url_for('suppliers.suppliers', edit=supplier.id) }}" class="action-btn edit-btn" title="Edit supplier" aria-label="Edit supplier">
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </a>
+                                            <form action="{{ url_for('suppliers.delete_supplier_route', supplier_id=supplier.id) }}" method="POST">
+                                                <button type="submit" class="action-btn delete-btn" title="Delete supplier" aria-label="Delete supplier">
+                                                    <i class="fa-regular fa-trash-can"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr class="default-empty-row">
+                                <td colspan="7" class="empty-state">No suppliers available yet.</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+
+                    {% if suppliers %}
+                        <div class="suppliers-search-empty" id="suppliers-search-empty" hidden>
+                            No matching suppliers found.
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

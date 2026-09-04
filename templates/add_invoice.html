@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Invoice
+{% endblock %}
+
+{% block content %}
+
+<div class="add-invoice-page">
+    <div class="add-invoice-shell">
+        <div class="add-invoice-page-header">
+            <div>
+                <div class="invoices-header-badge">
+                    <div class="invoices-header-icon">
+                        <i class="fa-solid fa-file-circle-plus"></i>
+                    </div>
+                    <span>New Invoice</span>
+                </div>
+
+                <h1>Create Invoice</h1>
+                <p>Prepare a customer invoice and record the sale in your inventory.</p>
+            </div>
+
+            <a href="{{ url_for('invoices.invoices') }}" class="add-invoice-back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Invoices</span>
+            </a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="auth-flash-container">
+                    {% for category, message in messages %}
+                        <div class="auth-flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form
+            action="{{ url_for('invoices.add_invoice_route') }}"
+            method="POST"
+            class="invoice-document"
+            id="add-invoice-form"
+        >
+            <div class="invoice-document-header">
+                <div class="invoice-brand">
+                    <div class="invoice-brand-icon">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div>
+                        <strong>InventoryPro</strong>
+                        <span>Inventory Management System</span>
+                    </div>
+                </div>
+
+                <div class="invoice-heading">
+                    <span class="invoice-document-status">Open</span>
+                    <h2>INVOICE</h2>
+                    <div class="invoice-number-preview">
+                        <span>Invoice Number</span>
+                        <strong>Generated automatically</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-information-grid">
+                <section class="invoice-party-card invoice-issued-by">
+                    <div class="invoice-section-label">Issued By</div>
+                    <h3>InventoryPro</h3>
+                    <p>Created by {{ session['user']['username'] }}</p>
+                    <p>Inventory Management System</p>
+                </section>
+
+                <section class="invoice-party-card invoice-bill-to">
+                    <div class="invoice-section-label">Bill To</div>
+
+                    <label for="customer_id">
+                        Customer <span class="required-mark">*</span>
+                    </label>
+                    <select id="customer_id" name="customer_id" required>
+                        <option value="">Select a customer</option>
+                        {% for customer in customers %}
+                            <option
+                                value="{{ customer.id }}"
+                                data-name="{{ customer.customer_name }}"
+                                data-contact="{{ customer.contact_person or '' }}"
+                                data-email="{{ customer.email or '' }}"
+                                data-phone="{{ customer.phone or '' }}"
+                                data-street="{{ customer.street }}"
+                                data-house-number="{{ customer.house_number }}"
+                                data-postal-code="{{ customer.postal_code }}"
+                                data-city="{{ customer.city }}"
+                                data-country="{{ customer.country }}"
+                            >
+                                {{ customer.customer_name }} — {{ customer.city }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="invoice-customer-preview" id="invoice-customer-preview">
+                        <strong id="invoice-customer-name">No customer selected</strong>
+                        <span id="invoice-customer-contact">—</span>
+                        <span id="invoice-customer-address">—</span>
+                        <span id="invoice-customer-location">—</span>
+                        <span id="invoice-customer-communication">—</span>
+                    </div>
+
+                    {% if not customers %}
+                        <p class="invoice-form-notice">
+                            No active customers are available.
+                            <a href="{{ url_for('customers.add_customer_route') }}">Add a customer first.</a>
+                        </p>
+                    {% endif %}
+                </section>
+
+                <section class="invoice-meta-card">
+                    <div class="invoice-section-label">Invoice Details</div>
+
+                    <label for="invoice_date">
+                        Invoice Date <span class="required-mark">*</span>
+                    </label>
+                    <input type="date" id="invoice_date" name="invoice_date" required>
+
+                    <div class="invoice-meta-row">
+                        <span>Payment Status</span>
+                        <strong>Open</strong>
+                    </div>
+                </section>
+            </div>
+
+            <section class="invoice-items-section">
+                <div class="invoice-items-heading">
+                    <div>
+                        <div class="invoice-section-label">Invoice Items</div>
+                        <h3>Products & Quantities</h3>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="invoice-add-item-btn"
+                        id="invoice-add-item"
+                        {% if not products %}disabled{% endif %}
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Product</span>
+                    </button>
+                </div>
+
+                {% if products %}
+                    <div class="invoice-items-table-wrap">
+                        <table class="invoice-items-table">
+                            <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>SKU</th>
+                                <th>Available</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Line Total</th>
+                                <th aria-label="Remove item"></th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="invoice-items-body">
+                            <tr class="invoice-item-row" data-invoice-item-row>
+                                <td>
+                                    <select name="product_id" class="invoice-product-select" required>
+                                        <option value="">Select a product</option>
+                                        {% for product in products %}
+                                            <option
+                                                value="{{ product.id }}"
+                                                data-sku="{{ product.sku }}"
+                                                data-price="{{ product.price }}"
+                                                data-stock="{{ product.stock_quantity }}"
+                                            >
+                                                {{ product.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td><span class="invoice-item-sku">—</span></td>
+                                <td><span class="invoice-item-stock">—</span></td>
+                                <td>
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        class="invoice-item-quantity"
+                                        value="1"
+                                        min="1"
+                                        step="1"
+                                        required
+                                    >
+                                </td>
+                                <td><span class="invoice-item-price">0.00 €</span></td>
+                                <td><strong class="invoice-item-total">0.00 €</strong></td>
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="invoice-remove-item-btn"
+                                        title="Remove product"
+                                        aria-label="Remove product"
+                                    >
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="invoice-items-empty">
+                        <i class="fa-solid fa-box-open"></i>
+                        <div>
+                            <strong>No products available</strong>
+                            <span>Add stock or activate a product before creating an invoice.</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </section>
+
+            <div class="invoice-footer-grid">
+                <section class="invoice-note-section">
+                    <label for="note">Invoice Note</label>
+                    <textarea
+                        id="note"
+                        name="note"
+                        rows="4"
+                        placeholder="Add an optional note for this invoice"
+                    ></textarea>
+                </section>
+
+                <section class="invoice-summary">
+                    <div class="invoice-summary-row">
+                        <span>Items</span>
+                        <strong id="invoice-items-count">0</strong>
+                    </div>
+                    <div class="invoice-summary-row invoice-summary-total">
+                        <span>Total Amount</span>
+                        <strong id="invoice-grand-total">0.00 €</strong>
+                    </div>
+                    <p>Prices are calculated from the current product data.</p>
+                </section>
+            </div>
+
+            <div class="add-invoice-actions">
+                <a href="{{ url_for('invoices.invoices') }}" class="add-invoice-cancel">
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="invoice-create-btn"
+                    {% if not customers or not products %}disabled{% endif %}
+                >
+                    <i class="fa-solid fa-file-circle-check"></i>
+                    <span>Create Invoice</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<template id="invoice-item-template">
+    <tr class="invoice-item-row" data-invoice-item-row>
+        <td>
+            <select name="product_id" class="invoice-product-select" required>
+                <option value="">Select a product</option>
+                {% for product in products %}
+                    <option
+                        value="{{ product.id }}"
+                        data-sku="{{ product.sku }}"
+                        data-price="{{ product.price }}"
+                        data-stock="{{ product.stock_quantity }}"
+                    >
+                        {{ product.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </td>
+        <td><span class="invoice-item-sku">—</span></td>
+        <td><span class="invoice-item-stock">—</span></td>
+        <td>
+            <input
+                type="number"
+                name="quantity"
+                class="invoice-item-quantity"
+                value="1"
+                min="1"
+                step="1"
+                required
+            >
+        </td>
+        <td><span class="invoice-item-price">0.00 €</span></td>
+        <td><strong class="invoice-item-total">0.00 €</strong></td>
+        <td>
+            <button
+                type="button"
+                class="invoice-remove-item-btn"
+                title="Remove product"
+                aria-label="Remove product"
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<script src="{{ url_for('static', filename='js/add_invoice.js') }}"></script>
+
+{% endblock %}

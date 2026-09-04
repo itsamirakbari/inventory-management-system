@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}
+Customers
+{% endblock %}
+
+{% block content %}
+
+{% set active_customers = customers|selectattr('is_active')|list %}
+{% set inactive_customers = customers|rejectattr('is_active')|list %}
+
+<div class="customers-page">
+    <div class="customers-header">
+        <div class="customers-header-content">
+            <div class="customers-header-main">
+                <div class="customers-header-badge">
+                    <div class="customers-header-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <span>Customer Directory</span>
+                </div>
+
+                <h1>Customers</h1>
+                <p>Manage customer contact details, addresses, and account status in one place.</p>
+            </div>
+
+            <div class="customers-header-stats">
+                <div class="customers-stat-card">
+                    <div class="customers-stat-icon customers-stat-icon-orange">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="customers-stat-value">{{ customers|length }}</div>
+                    <div class="customers-stat-label">Total Customers</div>
+                </div>
+
+                <div class="customers-stat-card">
+                    <div class="customers-stat-icon customers-stat-icon-green">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div class="customers-stat-value customers-stat-value-green">{{ active_customers|length }}</div>
+                    <div class="customers-stat-label">Active Customers</div>
+                </div>
+
+                <div class="customers-stat-card">
+                    <div class="customers-stat-icon customers-stat-icon-blue">
+                        <i class="fa-solid fa-user-slash"></i>
+                    </div>
+                    <div class="customers-stat-value customers-stat-value-blue">{{ inactive_customers|length }}</div>
+                    <div class="customers-stat-label">Inactive Customers</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="auth-flash-container">
+                {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="customers-content customers-content-full">
+        <div class="customers-table-section customers-table-section-full">
+            <div class="customers-table-card customers-table-card-full">
+                <div class="customers-table-header">
+                    <div class="customers-table-title">
+                        <div class="customers-table-icon">
+                            <i class="fa-solid fa-address-book"></i>
+                        </div>
+                        <h2>All Customers</h2>
+                    </div>
+
+                    <div class="customers-table-tools">
+                        <div class="customers-count">
+                            {{ customers|length }} Customers
+                        </div>
+
+                        <a href="{{ url_for('customers.add_customer_route') }}" class="customers-add-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add New Customer</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="customers-search-bar">
+                    <div class="customers-search-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="customers-search"
+                            placeholder="Search customers by name, contact, email, city or country..."
+                            aria-label="Search customers"
+                        >
+                    </div>
+                </div>
+
+                <div class="data-table-scroll">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% if customers %}
+                            {% for customer in customers %}
+                            <tr data-customer-search="{{ (customer.customer_name ~ ' ' ~ (customer.contact_person or '') ~ ' ' ~ (customer.email or '') ~ ' ' ~ customer.street ~ ' ' ~ customer.house_number ~ ' ' ~ customer.postal_code ~ ' ' ~ customer.city ~ ' ' ~ customer.country)|lower }}">
+                                {% if request.args.get('edit') == customer.id|string %}
+                                    <td>
+                                        <input type="text" name="customer_name" value="{{ customer.customer_name }}" form="update-customer-{{ customer.id }}" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="contact_person" value="{{ customer.contact_person or '' }}" form="update-customer-{{ customer.id }}">
+                                    </td>
+                                    <td>
+                                        <input type="email" name="email" value="{{ customer.email or '' }}" form="update-customer-{{ customer.id }}">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="phone" value="{{ customer.phone or '' }}" form="update-customer-{{ customer.id }}">
+                                    </td>
+                                    <td>
+                                        <div class="customer-address-edit">
+                                            <input type="text" name="street" value="{{ customer.street }}" placeholder="Street" form="update-customer-{{ customer.id }}" required>
+                                            <input type="text" name="house_number" value="{{ customer.house_number }}" placeholder="House no." form="update-customer-{{ customer.id }}" required>
+                                            <input type="text" name="postal_code" value="{{ customer.postal_code }}" placeholder="Postal code" form="update-customer-{{ customer.id }}" required>
+                                            <input type="text" name="city" value="{{ customer.city }}" placeholder="City" form="update-customer-{{ customer.id }}" required>
+                                            <input type="text" name="country" value="{{ customer.country }}" placeholder="Country" form="update-customer-{{ customer.id }}" required>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <textarea name="description" rows="3" form="update-customer-{{ customer.id }}">{{ customer.description or '' }}</textarea>
+                                    </td>
+                                    <td>
+                                        <span class="customer-status-badge {{ 'active' if customer.is_active else 'inactive' }}">
+                                            {{ 'Active' if customer.is_active else 'Inactive' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="customer-actions">
+                                            <button type="submit" form="update-customer-{{ customer.id }}" class="action-btn edit-btn" title="Save customer" aria-label="Save customer">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                            <a href="{{ url_for('customers.customers') }}" class="action-btn delete-btn" title="Cancel edit" aria-label="Cancel edit">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </a>
+                                        </div>
+
+                                        <form id="update-customer-{{ customer.id }}" action="{{ url_for('customers.update_customer_route', customer_id=customer.id) }}" method="POST"></form>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <span class="customer-name-cell">
+                                            <i class="fa-regular fa-user"></i>
+                                            <span>{{ customer.customer_name }}</span>
+                                        </span>
+                                    </td>
+                                    <td>{{ customer.contact_person or '—' }}</td>
+                                    <td>
+                                        {% if customer.email %}
+                                            <a href="mailto:{{ customer.email }}" class="customer-email-link">{{ customer.email }}</a>
+                                        {% else %}
+                                            <span>—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if customer.phone %}
+                                            <a href="tel:{{ customer.phone|replace(' ', '') }}" class="customer-phone-link">{{ customer.phone }}</a>
+                                        {% else %}
+                                            <span>—</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span class="customer-address">
+                                            {{ customer.street }} {{ customer.house_number }},
+                                            {{ customer.postal_code }} {{ customer.city }},
+                                            {{ customer.country }}
+                                        </span>
+                                    </td>
+                                    <td>{{ customer.description or '—' }}</td>
+                                    <td>
+                                        <form
+                                            action="{{ url_for('customers.update_customer_status_route', customer_id=customer.id) }}"
+                                            method="POST"
+                                            class="customer-status-form"
+                                            onsubmit='return confirmCustomerStatusChange({{ customer.customer_name|tojson }}, {{ "true" if customer.is_active else "false" }});'
+                                        >
+                                            <button type="submit" class="customer-status-badge {{ 'active' if customer.is_active else 'inactive' }}" title="Toggle customer status">
+                                                {{ 'Active' if customer.is_active else 'Inactive' }}
+                                            </button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <div class="customer-actions">
+                                            <a href="{{ url_for('customers.customers', edit=customer.id) }}" class="action-btn edit-btn" title="Edit customer" aria-label="Edit customer">
+                                                <i class="fa-regular fa-pen-to-square"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr class="default-empty-row">
+                                <td colspan="8" class="empty-state">No customers available yet.</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+
+                    {% if customers %}
+                        <div class="customers-search-empty" id="customers-search-empty" hidden>
+                            No matching customers found.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/customers.js') }}"></script>
+
+{% endblock %}

@@ -14,8 +14,20 @@ logger = logging.getLogger(LOGGER_NAME)
 @suppliers_bp.route("/", methods=["GET"])
 @login_required
 def suppliers():
-    suppliers_list = get_all_suppliers()
-    return render_template("suppliers.html", suppliers=suppliers_list)
+    try:
+        suppliers_list = get_all_suppliers()
+
+        return render_template("suppliers.html",suppliers=suppliers_list)
+
+    except mysql.connector.Error:
+        flash("Database error. Please try again.", "error")
+        logger.exception(f"Database error while loading suppliers | User: {session['user']['username']}")
+        return redirect(url_for("dashboard.dashboard"))
+
+    except Exception:
+        flash("An unexpected error occurred.", "error")
+        logger.exception(f"Unexpected error while loading suppliers | User: {session['user']['username']}")
+        return redirect(url_for("dashboard.dashboard"))
 
 
 @suppliers_bp.route("/add", methods=["GET", "POST"])
@@ -26,7 +38,7 @@ def add_supplier_route():
 
     company_name = request.form.get("company_name", "").strip()
     contact_person = request.form.get("contact_person", "").strip()
-    email = request.form.get("email", "").strip()
+    email = request.form.get("email", "").strip().lower()
     phone = request.form.get("phone", "").strip()
     street = request.form.get("street", "").strip()
     house_number = request.form.get("house_number", "").strip()
@@ -35,7 +47,7 @@ def add_supplier_route():
     country = request.form.get("country", "").strip()
     description = request.form.get("description", "").strip()
 
-    if not (
+    if not all((
         company_name,
         contact_person,
         email,
@@ -46,7 +58,7 @@ def add_supplier_route():
         city,
         country,
         description
-    ):
+    )):
         flash("Please fill all required fields.", "error")
         return redirect(url_for("suppliers.add_supplier_route"))
 
@@ -56,13 +68,13 @@ def add_supplier_route():
     city = city.title()
     country = country.title()
 
-    existing_supplier = get_supplier_by_name(company_name)
-
-    if existing_supplier:
-        flash(f"Supplier '{company_name}' already exists.", "error")
-        return redirect(url_for("suppliers.add_supplier_route"))
-
     try:
+        existing_supplier = get_supplier_by_name(company_name)
+
+        if existing_supplier:
+            flash(f"Supplier '{company_name}' already exists.", "error")
+            return redirect(url_for("suppliers.add_supplier_route"))
+
         create_supplier(
             company_name,
             contact_person,
@@ -121,7 +133,7 @@ def delete_supplier_route(supplier_id):
 def update_supplier_route(supplier_id):
     company_name = request.form.get("company_name", "").strip()
     contact_person = request.form.get("contact_person", "").strip()
-    email = request.form.get("email", "").strip()
+    email = request.form.get("email", "").strip().lower()
     phone = request.form.get("phone", "").strip()
     street = request.form.get("street", "").strip()
     house_number = request.form.get("house_number", "").strip()
@@ -130,7 +142,7 @@ def update_supplier_route(supplier_id):
     country = request.form.get("country", "").strip()
     description = request.form.get("description", "").strip()
 
-    if not (
+    if not all((
         company_name,
         contact_person,
         email,
@@ -141,7 +153,7 @@ def update_supplier_route(supplier_id):
         city,
         country,
         description
-    ):
+    )):
         flash("Please fill all required fields.", "error")
         return redirect(url_for("suppliers.suppliers"))
 
@@ -151,19 +163,19 @@ def update_supplier_route(supplier_id):
     city = city.title()
     country = country.title()
 
-    supplier = get_supplier_by_id(supplier_id)
-
-    if not supplier:
-        flash("Supplier not found.", "error")
-        return redirect(url_for("suppliers.suppliers"))
-
-    existing_supplier = get_supplier_by_name(company_name)
-
-    if existing_supplier and existing_supplier["id"] != supplier_id:
-        flash(f"Supplier '{company_name}' already exists.", "error")
-        return redirect(url_for("suppliers.suppliers"))
-
     try:
+        supplier = get_supplier_by_id(supplier_id)
+
+        if not supplier:
+            flash("Supplier not found.", "error")
+            return redirect(url_for("suppliers.suppliers"))
+
+        existing_supplier = get_supplier_by_name(company_name)
+
+        if existing_supplier and existing_supplier["id"] != supplier_id:
+            flash(f"Supplier '{company_name}' already exists.", "error")
+            return redirect(url_for("suppliers.suppliers"))
+
         update_supplier(
             supplier_id,
             company_name,
@@ -183,12 +195,12 @@ def update_supplier_route(supplier_id):
 
     except mysql.connector.Error:
         flash("Database error. Please try again.", "error")
-        logger.exception(f"Database error while updating supplier | Supplier ID: {supplier_id} | Old Company Name: '{supplier['company_name']}' | New Company Name: '{company_name}' | User: {session['user']['username']}")
+        logger.exception(f"Database error while updating supplier | Supplier ID: {supplier_id} | New Company Name: '{company_name}' | User: {session['user']['username']}")
         return redirect(url_for("suppliers.suppliers"))
 
     except Exception:
         flash("An unexpected error occurred.", "error")
-        logger.exception(f"Unexpected error while updating supplier | Supplier ID: {supplier_id} | Old Company Name: '{supplier['company_name']}' | New Company Name: '{company_name}' | User: {session['user']['username']}")
+        logger.exception(f"Unexpected error while updating supplier | Supplier ID: {supplier_id} | New Company Name: '{company_name}' | User: {session['user']['username']}")
         return redirect(url_for("suppliers.suppliers"))
 
 

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}
+Invoices
+{% endblock %}
+
+{% block content %}
+
+{% set open_invoices = invoices|selectattr('status', 'equalto', 'open')|list %}
+{% set paid_invoices = invoices|selectattr('status', 'equalto', 'paid')|list %}
+
+<div class="invoices-page">
+    <div class="invoices-header">
+        <div class="invoices-header-content">
+            <div class="invoices-header-main">
+                <div class="invoices-header-badge">
+                    <div class="invoices-header-icon">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+                    <span>Sales & Billing</span>
+                </div>
+
+                <h1>Invoices</h1>
+                <p>Review customer invoices, payment status, totals, and invoice details in one place.</p>
+            </div>
+
+            <div class="invoices-header-stats">
+                <div class="invoices-stat-card">
+                    <div class="invoices-stat-icon invoices-stat-icon-orange">
+                        <i class="fa-solid fa-file-invoice"></i>
+                    </div>
+                    <div class="invoices-stat-value">{{ invoices|length }}</div>
+                    <div class="invoices-stat-label">Total Invoices</div>
+                </div>
+
+                <div class="invoices-stat-card">
+                    <div class="invoices-stat-icon invoices-stat-icon-blue">
+                        <i class="fa-regular fa-clock"></i>
+                    </div>
+                    <div class="invoices-stat-value invoices-stat-value-blue">{{ open_invoices|length }}</div>
+                    <div class="invoices-stat-label">Open Invoices</div>
+                </div>
+
+                <div class="invoices-stat-card">
+                    <div class="invoices-stat-icon invoices-stat-icon-green">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="invoices-stat-value invoices-stat-value-green">{{ paid_invoices|length }}</div>
+                    <div class="invoices-stat-label">Paid Invoices</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="auth-flash-container">
+                {% for category, message in messages %}
+                    <div class="auth-flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="invoices-content invoices-content-full">
+        <div class="invoices-table-section invoices-table-section-full">
+            <div class="invoices-table-card invoices-table-card-full">
+                <div class="invoices-table-header">
+                    <div class="invoices-table-title">
+                        <div class="invoices-table-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <h2>All Invoices</h2>
+                    </div>
+
+                    <div class="invoices-table-tools">
+                        <div class="invoices-count">
+                            {{ invoices|length }} Invoices
+                        </div>
+
+                        <a href="{{ url_for('invoices.add_invoice_route') }}" class="invoices-add-btn">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Create Invoice</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="invoices-search-bar">
+                    <div class="invoices-search-input">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input
+                            type="text"
+                            id="invoices-search"
+                            placeholder="Search by invoice number, customer, creator, date or status..."
+                            aria-label="Search invoices"
+                        >
+                    </div>
+                </div>
+
+                <div class="data-table-scroll">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Invoice Number</th>
+                            <th>Customer</th>
+                            <th>Invoice Date</th>
+                            <th>Created By</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% if invoices %}
+                            {% for invoice in invoices %}
+                            <tr data-invoice-search="{{ ((invoice.invoice_number or '') ~ ' ' ~ (invoice.customer_name or '') ~ ' ' ~ (invoice.username or '') ~ ' ' ~ (invoice.invoice_date or '') ~ ' ' ~ (invoice.status or '') ~ ' ' ~ (invoice.total_amount or ''))|lower }}">
+                                <td>
+                                    <span class="invoice-number-cell">
+                                        <i class="fa-regular fa-file-lines"></i>
+                                        <span>{{ invoice.invoice_number }}</span>
+                                    </span>
+                                </td>
+                                <td>{{ invoice.customer_name }}</td>
+                                <td>
+                                    {{ invoice.invoice_date.strftime('%d.%m.%Y') if invoice.invoice_date else '—' }}
+                                </td>
+                                <td>
+                                    <span class="invoice-created-by">
+                                        <i class="fa-regular fa-user"></i>
+                                        <span>{{ invoice.username }}</span>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="invoice-total-amount">
+                                        {{ '%.2f'|format(invoice.total_amount) }} €
+                                    </span>
+                                </td>
+                                <td>
+                                    <form
+                                        action="{{ url_for('invoices.update_invoice_status_route', invoice_id=invoice.id) }}"
+                                        method="POST"
+                                        class="invoice-status-form"
+                                        onsubmit='return confirmInvoiceStatusChange({{ invoice.invoice_number|tojson }}, {{ invoice.status|tojson }});'
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="status"
+                                            value="{{ 'paid' if invoice.status == 'open' else 'open' }}"
+                                        >
+                                        <button
+                                            type="submit"
+                                            class="invoice-status-badge {{ invoice.status }}"
+                                            title="{{ 'Mark as paid' if invoice.status == 'open' else 'Reopen invoice' }}"
+                                        >
+                                            {{ invoice.status|title }}
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="invoice-actions">
+                                        <a
+                                            href="{{ url_for('invoices.invoice_detail_route', invoice_id=invoice.id) }}"
+                                            class="action-btn invoice-view-btn"
+                                            title="View invoice"
+                                            aria-label="View invoice {{ invoice.invoice_number }}"
+                                        >
+                                            <i class="fa-regular fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr class="default-empty-row">
+                                <td colspan="7" class="empty-state">No invoices available yet.</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+
+                    {% if invoices %}
+                        <div class="invoices-search-empty" id="invoices-search-empty" hidden>
+                            No matching invoices found.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/invoices.js') }}"></script>
+
+{% endblock %}

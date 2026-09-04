@@ -112,9 +112,62 @@ CHECK (
 );
 
 
+CREATE TABLE customers (
+id INT PRIMARY KEY AUTO_INCREMENT,
+
+customer_name VARCHAR(150) NOT NULL,
+contact_person VARCHAR(100),
+email VARCHAR(255),
+phone VARCHAR(30),
+street VARCHAR(150) NOT NULL,
+house_number VARCHAR(20) NOT NULL,
+postal_code VARCHAR(20) NOT NULL,
+city VARCHAR(100) NOT NULL,
+country VARCHAR(100) NOT NULL,
+description TEXT,
+is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
+);
 
 
+CREATE TABLE invoices (
+id INT PRIMARY KEY AUTO_INCREMENT,
+invoice_number VARCHAR(50) UNIQUE NOT NULL,
 
+customer_id INT NOT NULL,
+user_id INT NOT NULL,
+
+invoice_date DATE NOT NULL DEFAULT (CURRENT_DATE),
+status ENUM('open', 'paid') NOT NULL DEFAULT 'open',
+total_amount DECIMAL(10,2) NOT NULL CHECK (total_amount >= 0),
+note TEXT,
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+
+FOREIGN KEY (customer_id) REFERENCES customers(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
+
+
+CREATE TABLE invoice_items (
+id INT PRIMARY KEY AUTO_INCREMENT,
+
+invoice_id INT NOT NULL,
+product_id INT NOT NULL,
+
+quantity INT NOT NULL CHECK (quantity > 0),
+unit_price DECIMAL(10,2) NOT NULL CHECK (unit_price >= 0),
+
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+UNIQUE (invoice_id, product_id),
+
+FOREIGN KEY (invoice_id) REFERENCES invoices(id) ON UPDATE CASCADE ON DELETE RESTRICT,
+FOREIGN KEY (product_id) REFERENCES products(id) ON UPDATE CASCADE ON DELETE RESTRICT
+);
 
 
 

@@ -69,6 +69,40 @@ def execute(query, params=None):
     finally:
         if cursor is not None:
             cursor.close()
+
+        if connection is not None and connection.is_connected():
+            connection.close()
+
+
+def execute_insert(query, params=None):
+    connection = None
+    cursor = None
+
+    try:
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        cursor.execute(query, params)
+        inserted_id = cursor.lastrowid
+
+        connection.commit()
+
+        return inserted_id
+
+    except mysql.connector.Error:
+        if connection is not None and connection.is_connected():
+            try:
+                connection.rollback()
+            except mysql.connector.Error:
+                logger.exception("Database rollback failed in execute_insert()")
+
+        logger.exception("Database error in execute_insert()")
+        raise
+
+    finally:
+        if cursor is not None:
+            cursor.close()
+
         if connection is not None and connection.is_connected():
             connection.close()
 
@@ -204,16 +238,17 @@ def get_supplier_by_name(supplier_name):
     return fetch_one(query, (supplier_name,))
 
 
-def create_supplier(company_name,
-                    contact_person,
-                    email,
-                    phone,
-                    street,
-                    house_number,
-                    postal_code,
-                    city,
-                    country,
-                    description
+def create_supplier(
+        company_name,
+        contact_person,
+        email,
+        phone,
+        street,
+        house_number,
+        postal_code,
+        city,
+        country,
+        description
 ):
     query = """
         INSERT INTO
@@ -262,10 +297,120 @@ def delete_supplier(supplier_id):
     return execute(query, (supplier_id,))
 
 
+# ______Customers______
+def get_all_customers():
+    query = """
+        SELECT * FROM customers
+    """
+
+    return fetch_all(query)
+
+
+def get_active_customers():
+    query = """
+        SELECT * FROM customers WHERE is_active = 1
+    """
+
+    return fetch_all(query)
+
+
+def get_customer_by_id(customer_id):
+    query = """
+        SELECT * FROM customers WHERE id = %s
+    """
+
+    return fetch_one(query, (customer_id,))
+
+
+def get_customer_by_name_and_address(customer_name, street, house_number, postal_code, city, country):
+    query = """
+        SELECT * FROM customers 
+        WHERE customer_name = %s
+        AND street = %s
+        AND house_number = %s
+        AND postal_code = %s
+        AND city = %s
+        AND country = %s
+    """
+
+    return fetch_one(query, (customer_name, street, house_number, postal_code, city, country))
+
+
+def create_customer(
+        customer_name,
+        contact_person,
+        email,
+        phone,
+        street,
+        house_number,
+        postal_code,
+        city,
+        country,
+        description
+):
+    query = """
+        INSERT INTO
+        customers (customer_name, contact_person, email, phone, street, house_number, postal_code, city, country, description)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+
+    return execute(query, (customer_name, contact_person, email, phone, street, house_number, postal_code, city, country, description))
+
+
+def update_customer(
+        customer_id,
+        customer_name,
+        contact_person,
+        email,
+        phone,
+        street,
+        house_number,
+        postal_code,
+        city,
+        country,
+        description
+):
+    query = """
+        UPDATE customers SET customer_name = %s,
+        contact_person = %s,
+        email = %s,
+        phone = %s,
+        street = %s,
+        house_number = %s,
+        postal_code = %s,
+        city = %s,
+        country = %s,
+        description = %s
+        WHERE id = %s
+    """
+
+    return execute(query, (customer_name, contact_person, email, phone, street, house_number, postal_code, city, country, description, customer_id))
+
+
+def update_customer_status(customer_id, is_active):
+    query = """
+        UPDATE customers SET is_active = %s WHERE id = %s
+    """
+
+    return execute(query, (is_active, customer_id))
+
+
 #______Products______
 def get_all_products():
     query = """
         SELECT * FROM products
+    """
+
+    return fetch_all(query)
+
+
+def get_available_products():
+    query = """
+        SELECT id, name, sku, price, stock_quantity
+        FROM products
+        WHERE is_active = 1
+        AND stock_quantity > 0
+        ORDER BY name ASC
     """
 
     return fetch_all(query)
@@ -332,6 +477,130 @@ def update_product_status(product_id, is_active):
     """
 
     return execute(query, (is_active, product_id))
+
+
+# ______Invoices______
+def get_all_invoices():
+    query = """
+        SELECT
+            invoices.id,
+            invoices.invoice_number,
+            invoices.customer_id,
+            invoices.user_id,
+            invoices.invoice_date,
+            invoices.status,
+            invoices.total_amount,
+            invoices.note,
+            invoices.created_at,
+            invoices.updated_at,
+            customers.customer_name,
+            users.username
+        FROM invoices
+        JOIN customers ON customers.id = invoices.customer_id
+        JOIN users ON users.id = invoices.user_id
+        ORDER BY invoices.invoice_date DESC, invoices.id DESC
+    """
+
+    return fetch_all(query)
+
+
+def get_invoice_by_id(invoice_id):
+    query = """
+        SELECT
+            invoices.id,
+            invoices.invoice_number,
+            invoices.customer_id,
+            invoices.user_id,
+            invoices.invoice_date,
+            invoices.status,
+            invoices.total_amount,
+            invoices.note,
+            invoices.created_at,
+            invoices.updated_at,
+            customers.customer_name,
+            customers.contact_person,
+            customers.email,
+            customers.phone,
+            customers.street,
+            customers.house_number,
+            customers.postal_code,
+            customers.city,
+            customers.country,
+            users.username
+        FROM invoices
+        JOIN customers ON customers.id = invoices.customer_id
+        JOIN users ON users.id = invoices.user_id
+        WHERE invoices.id = %s
+    """
+
+    return fetch_one(query, (invoice_id,))
+
+
+def get_invoice_items(invoice_id):
+    query = """
+        SELECT
+            invoice_items.id,
+            invoice_items.invoice_id,
+            invoice_items.product_id,
+            invoice_items.quantity,
+            invoice_items.unit_price,
+            invoice_items.created_at,
+            products.name AS product_name,
+            products.sku AS product_sku
+        FROM invoice_items
+        JOIN products ON products.id = invoice_items.product_id
+        WHERE invoice_items.invoice_id = %s
+        ORDER BY invoice_items.id ASC
+    """
+
+    return fetch_all(query, (invoice_id,))
+
+
+def create_invoice(
+        invoice_number,
+        customer_id,
+        user_id,
+        invoice_date,
+        total_amount,
+        note
+):
+    query = """
+        INSERT INTO
+        invoices (invoice_number, customer_id, user_id, invoice_date, total_amount, note)
+        VALUES (%s, %s, %s, %s, %s, %s)
+    """
+
+    return execute_insert(query, (invoice_number, customer_id, user_id, invoice_date, total_amount, note))
+
+
+def create_invoice_item(
+        invoice_id,
+        product_id,
+        quantity,
+        unit_price
+):
+    query = """
+        INSERT INTO
+        invoice_items (invoice_id, product_id, quantity, unit_price)
+        VALUES (%s, %s, %s, %s)
+    """
+
+    return execute(query, (invoice_id, product_id, quantity, unit_price))
+
+
+def update_invoice_status(invoice_id, status):
+    allowed_statuses = ("open", "paid")
+
+    if status not in allowed_statuses:
+        raise ValueError("Invalid invoice status.")
+
+    query = """
+        UPDATE invoices 
+        SET status = %s 
+        WHERE id = %s
+    """
+
+    return execute(query, (status, invoice_id))
 
 
 #______Inventory_transactions______
@@ -579,6 +848,10 @@ def get_out_of_stock_products(limit=5):
     """
 
     return fetch_all(query, (limit,))
+
+
+
+
 
 
 
