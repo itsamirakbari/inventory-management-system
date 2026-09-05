@@ -42,7 +42,7 @@ nav {
     justify-content: space-between;
     align-items: center;
     background-color: #223447;
-    padding: 0px 30px;
+    padding: 0 30px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -777,66 +777,6 @@ body:not(.home-body) .main-content::after {
     font-size: 0.92rem;
     font-weight: 500;
     text-align: center;
-}
-
-@media (min-width: 761px) {
-    .invoices-header {
-        margin-bottom: 8px;
-        padding: 8px 12px 0;
-    }
-
-    .invoices-header-content {
-        flex-direction: row;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .invoices-header-main {
-        flex: 0 1 34%;
-        width: auto;
-    }
-
-    .invoices-header-badge {
-        gap: 7px;
-        padding: 3px 9px;
-        margin-bottom: 5px;
-        font-size: 0.7rem;
-    }
-
-    .invoices-header-icon {
-        width: 22px;
-        height: 22px;
-        font-size: 0.7rem;
-    }
-
-    .invoices-header h1 {
-        margin-bottom: 3px;
-        font-size: 1.75rem;
-        line-height: 1;
-    }
-
-    .invoices-header p {
-        font-size: 0.78rem;
-        line-height: 1.25;
-    }
-
-    .invoices-header-stats {
-        flex: 1 1 0;
-        width: auto;
-        gap: 8px;
-    }
-
-    .invoices-stat-card {
-        height: 56px;
-        padding: 5px 10px;
-        border-radius: 18px;
-    }
-
-    .invoices-stat-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 10px;
-    }
 }
 
 @media (max-width: 980px) {
@@ -2797,7 +2737,7 @@ footer {
 
     width: 100%;
     max-width: 1400px;
-    margin: 0px auto;
+    margin: 0 auto;
 
     padding: 8px 30px;
     gap: 60px;
@@ -2811,7 +2751,7 @@ footer {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 0px;
+    gap: 0;
 
     margin-top: 0;
 }
@@ -2833,7 +2773,7 @@ footer {
     font-weight: 700;
     color: #1e293b;
     margin-top: -35px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 .register-intro span {
@@ -3062,7 +3002,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 0px;
+    padding-top: 0;
 }
 
 .verify-card {
@@ -3138,7 +3078,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 0px;
+    padding-top: 0;
 }
 
 .login-card {
@@ -3213,7 +3153,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 0px;
+    padding-top: 0;
 }
 
 .forgot-password-card {
@@ -3288,7 +3228,7 @@ footer {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 0px;
+    padding-top: 0;
 }
 
 .reset-password-card {
@@ -3950,7 +3890,6 @@ footer {
     padding: 26px 12px 6px;
 }
 
-.categories-form-section,
 .categories-table-section {
     display: flex;
     min-width: 0;
@@ -4159,7 +4098,6 @@ footer {
         grid-template-columns: 1fr;
     }
 
-    .categories-form-section,
     .categories-table-section {
         width: 100%;
     }
@@ -4357,21 +4295,6 @@ footer {
     line-height: 1;
     color: #1e293b;
     margin-bottom: 4px;
-}
-
-.suppliers-stat-value-blue,
-.suppliers-stat-value-green {
-    font-size: 0.72rem;
-    line-height: 1.2;
-    font-weight: 800;
-}
-
-.suppliers-stat-value-blue {
-    color: #3b82f6;
-}
-
-.suppliers-stat-value-green {
-    color: #22a06b;
 }
 
 .suppliers-stat-label {
@@ -4830,7 +4753,6 @@ footer {
     padding: 26px 12px 6px;
 }
 
-.suppliers-form-section,
 .suppliers-table-section {
     display: flex;
     min-width: 0;
@@ -5760,9 +5682,7 @@ footer {
 .products-stat-value-blue,
 .products-stat-value-green,
 .categories-stat-value-blue,
-.categories-stat-value-green,
-.suppliers-stat-value-blue,
-.suppliers-stat-value-green {
+.categories-stat-value-green {
     font-size: 0.72rem;
     line-height: 1.1;
 }
@@ -6660,97 +6580,6 @@ footer {
     .inventory-transactions-filter-reset {
         width: 100%;
         justify-content: center;
-    }
-}
-
-/* Shared compact desktop headers; placed after all list-page component rules. */
-@media (min-width: 761px) {
-    .products-header,
-    .categories-header,
-    .suppliers-header,
-    .inventory-transactions-header {
-        margin-bottom: 8px;
-        padding: 8px 12px 0;
-    }
-
-    .products-header-content,
-    .categories-header-content,
-    .suppliers-header-content,
-    .inventory-transactions-header-content {
-        flex-direction: row;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .products-header-main,
-    .categories-header-main,
-    .suppliers-header-main,
-    .inventory-transactions-header-main {
-        flex: 0 1 34%;
-        width: auto;
-    }
-
-    .products-header-badge,
-    .categories-header-badge,
-    .suppliers-header-badge,
-    .inventory-transactions-header-badge {
-        gap: 7px;
-        padding: 3px 9px;
-        margin-bottom: 5px;
-        font-size: 0.7rem;
-    }
-
-    .products-header-icon,
-    .categories-header-icon,
-    .suppliers-header-icon,
-    .inventory-transactions-header-icon {
-        width: 22px;
-        height: 22px;
-        font-size: 0.7rem;
-    }
-
-    .products-header h1,
-    .categories-header h1,
-    .suppliers-header h1,
-    .inventory-transactions-header h1 {
-        margin-bottom: 3px;
-        font-size: 1.75rem;
-        line-height: 1;
-    }
-
-    .products-header p,
-    .categories-header p,
-    .suppliers-header p,
-    .inventory-transactions-header p {
-        font-size: 0.78rem;
-        line-height: 1.25;
-    }
-
-    .products-header-stats,
-    .categories-header-stats,
-    .suppliers-header-stats,
-    .inventory-transactions-header-stats {
-        flex: 1 1 0;
-        width: auto;
-        gap: 8px;
-    }
-
-    .products-stat-card,
-    .categories-stat-card,
-    .suppliers-stat-card,
-    .inventory-transactions-stat-card {
-        height: 56px;
-        padding: 5px 10px;
-        border-radius: 18px;
-    }
-
-    .products-stat-icon,
-    .categories-stat-icon,
-    .suppliers-stat-icon,
-    .inventory-transactions-stat-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 10px;
     }
 }
 
@@ -10344,66 +10173,6 @@ button.customer-status-badge:hover {
     font-size: 0.9rem;
 }
 
-@media (min-width: 761px) {
-    .customers-header {
-        margin-bottom: 8px;
-        padding: 8px 12px 0;
-    }
-
-    .customers-header-content {
-        flex-direction: row;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .customers-header-main {
-        flex: 0 1 34%;
-        width: auto;
-    }
-
-    .customers-header-badge {
-        gap: 7px;
-        padding: 3px 9px;
-        margin-bottom: 5px;
-        font-size: 0.7rem;
-    }
-
-    .customers-header-icon {
-        width: 22px;
-        height: 22px;
-        font-size: 0.7rem;
-    }
-
-    .customers-header h1 {
-        margin-bottom: 3px;
-        font-size: 1.75rem;
-        line-height: 1;
-    }
-
-    .customers-header p {
-        font-size: 0.78rem;
-        line-height: 1.25;
-    }
-
-    .customers-header-stats {
-        flex: 1 1 0;
-        width: auto;
-        gap: 8px;
-    }
-
-    .customers-stat-card {
-        height: 56px;
-        padding: 5px 10px;
-        border-radius: 18px;
-    }
-
-    .customers-stat-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 10px;
-    }
-}
-
 @media (max-width: 980px) {
     .customers-header-content {
         flex-direction: column;
@@ -10457,4 +10226,134 @@ button.customer-status-badge:hover {
     }
 }
 
+/* Shared compact desktop headers for all list pages. */
+@media (min-width: 761px) {
+    :is(
+        .products-header,
+        .categories-header,
+        .suppliers-header,
+        .customers-header,
+        .invoices-header,
+        .inventory-transactions-header
+    ) {
+        margin-bottom: 8px;
+        padding: 8px 12px 0;
+    }
 
+    :is(
+        .products-header-content,
+        .categories-header-content,
+        .suppliers-header-content,
+        .customers-header-content,
+        .invoices-header-content,
+        .inventory-transactions-header-content
+    ) {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    :is(
+        .products-header-main,
+        .categories-header-main,
+        .suppliers-header-main,
+        .customers-header-main,
+        .invoices-header-main,
+        .inventory-transactions-header-main
+    ) {
+        width: 100%;
+        flex: 0 0 auto;
+    }
+
+    :is(
+        .products-header-badge,
+        .categories-header-badge,
+        .suppliers-header-badge,
+        .customers-header-badge,
+        .invoices-header-badge,
+        .inventory-transactions-header-badge
+    ) {
+        gap: 7px;
+        padding: 3px 9px;
+        margin-bottom: 5px;
+        font-size: 0.7rem;
+    }
+
+    :is(
+        .products-header-icon,
+        .categories-header-icon,
+        .suppliers-header-icon,
+        .customers-header-icon,
+        .invoices-header-icon,
+        .inventory-transactions-header-icon
+    ) {
+        width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+    }
+
+    :is(
+        .products-header,
+        .categories-header,
+        .suppliers-header,
+        .customers-header,
+        .invoices-header,
+        .inventory-transactions-header
+    ) h1 {
+        margin-bottom: 3px;
+        font-size: 1.75rem;
+        line-height: 1;
+    }
+
+    :is(
+        .products-header,
+        .categories-header,
+        .suppliers-header,
+        .customers-header,
+        .invoices-header,
+        .inventory-transactions-header
+    ) p {
+        font-size: 0.78rem;
+        line-height: 1.25;
+    }
+
+    :is(
+        .products-header-stats,
+        .categories-header-stats,
+        .suppliers-header-stats,
+        .customers-header-stats,
+        .invoices-header-stats,
+        .inventory-transactions-header-stats
+    ) {
+        width: 100%;
+        flex: 0 0 auto;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    :is(
+        .products-stat-card,
+        .categories-stat-card,
+        .suppliers-stat-card,
+        .customers-stat-card,
+        .invoices-stat-card,
+        .inventory-transactions-stat-card
+    ) {
+        height: 56px;
+        padding: 5px 10px;
+        border-radius: 18px;
+    }
+
+    :is(
+        .products-stat-icon,
+        .categories-stat-icon,
+        .suppliers-stat-icon,
+        .customers-stat-icon,
+        .invoices-stat-icon,
+        .inventory-transactions-stat-icon
+    ) {
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+    }
+}
