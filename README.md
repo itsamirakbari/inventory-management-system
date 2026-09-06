@@ -14,6 +14,8 @@ InventoryPro ist eine webbasierte Flask-Anwendung für die durchgängige Verwalt
 - Eigene Rechnungsdetailansicht mit Kunden-, Positions- und Erstellerinformationen
 - Rechnungsdownload als mehrseitiges PDF sowie druckoptimierte Browseransicht
 - Automatische `stock_out`-Lagerbewegung mit Referenz auf die Rechnungsnummer
+- Passende Transaktionsgründe abhängig von der gewählten Bewegungsart
+- Manuelle Verkaufsbuchungen gesperrt, da Verkäufe automatisch über Rechnungen gebucht werden
 - Transaktionssichere Bestandsänderungen mit Zeilensperre und Rollback
 - Suche, Filterung und konsistente Tabellenansichten in allen Verwaltungsbereichen
 - Registrierung, Anmeldung, E-Mail-Verifizierung, Passwort-Zurücksetzung und Profilverwaltung
@@ -48,6 +50,8 @@ Unterstützte Gründe:
 - Inventurkorrektur
 - Manuelle Korrektur
 - Sonstiger Grund mit Pflichtnotiz
+
+Manuelle Verkaufsbewegungen sind ausgeschlossen: Beim Erstellen einer Rechnung erzeugt die Anwendung für jede Position automatisch eine `stock_out`-Transaktion mit dem Grund `sale` und der Rechnungsnummer als Referenz. Im manuellen Transaktionsformular werden ausschließlich die zur gewählten Bewegungsart passenden Gründe angeboten.
 
 ## Screenshots
 

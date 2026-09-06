@@ -32,6 +32,18 @@ Add Inventory Transaction
             {% endif %}
         {% endwith %}
 
+        <div class="inventory-transaction-sale-info">
+            <i class="fa-solid fa-circle-info"></i>
+            <div>
+                <strong>Sales are managed through invoices</strong>
+                <p>Sale transactions cannot be added manually. Create an invoice to record a sale. The corresponding Stock Out transaction will be generated automatically.</p>
+            </div>
+            <a href="{{ url_for('invoices.add_invoice_route') }}">
+                Create Invoice
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+
         <div class="inventory-transactions-form-card add-inventory-transaction-form-card">
             <form action="{{ url_for('inventory_transactions.add_inventory_transaction_route') }}" method="POST">
                 <div class="inventory-transactions-form-header">
@@ -72,17 +84,16 @@ Add Inventory Transaction
 
                     <div class="form-group">
                         <label for="reason">Reason <span class="required-mark">*</span></label>
-                        <select id="reason" name="reason" required>
+                        <select id="reason" name="reason" required disabled>
                             <option value="" disabled selected>Select reason</option>
-                            <option value="purchase">Purchase</option>
-                            <option value="sale">Sale</option>
-                            <option value="return_in">Return In</option>
-                            <option value="return_out">Return Out</option>
-                            <option value="damaged_goods">Damaged Goods</option>
-                            <option value="lost_goods">Lost Goods</option>
-                            <option value="recount_correction">Recount Correction</option>
-                            <option value="manual_adjustment">Manual Adjustment</option>
-                            <option value="other">Other</option>
+                            <option value="purchase" data-types="stock_in">Purchase</option>
+                            <option value="return_in" data-types="stock_in">Return In</option>
+                            <option value="return_out" data-types="stock_out">Return Out</option>
+                            <option value="damaged_goods" data-types="adjustment_out">Damaged Goods</option>
+                            <option value="lost_goods" data-types="adjustment_out">Lost Goods</option>
+                            <option value="recount_correction" data-types="adjustment_in adjustment_out">Recount Correction</option>
+                            <option value="manual_adjustment" data-types="adjustment_in adjustment_out">Manual Adjustment</option>
+                            <option value="other" data-types="stock_in stock_out adjustment_in adjustment_out">Other</option>
                         </select>
                     </div>
 
@@ -108,5 +119,7 @@ Add Inventory Transaction
         </div>
     </div>
 </div>
+
+<script src="{{ url_for('static', filename='js/inventory_transactions.js') }}"></script>
 
 {% endblock %}

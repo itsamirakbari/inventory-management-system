@@ -6793,6 +6793,56 @@ footer {
     line-height: 1.42;
 }
 
+.inventory-transaction-sale-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border: 1px solid #bae6fd;
+    border-radius: 14px;
+    background: #f0f9ff;
+    color: #334155;
+}
+
+.inventory-transaction-sale-info > i {
+    color: #0284c7;
+    font-size: 1.15rem;
+}
+
+.inventory-transaction-sale-info div {
+    flex: 1;
+}
+
+.inventory-transaction-sale-info strong {
+    display: block;
+    margin-bottom: 2px;
+    color: #075985;
+    font-size: 0.88rem;
+}
+
+.inventory-transaction-sale-info p {
+    margin: 0;
+    color: #52647a;
+    font-size: 0.78rem;
+    line-height: 1.4;
+}
+
+.inventory-transaction-sale-info a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #0369a1;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.inventory-transaction-sale-info a:hover {
+    color: #1d4ed8;
+}
+
 .transaction-detail-stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -6959,6 +7009,15 @@ footer {
 
     .transaction-detail-stats {
         grid-template-columns: 1fr;
+    }
+
+    .inventory-transaction-sale-info {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .inventory-transaction-sale-info a {
+        margin-left: 30px;
     }
 
     .add-inventory-transaction-actions {

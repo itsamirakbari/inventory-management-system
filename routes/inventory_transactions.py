@@ -13,6 +13,20 @@ inventory_transactions_bp = Blueprint("inventory_transactions", __name__)
 logger = logging.getLogger(LOGGER_NAME)
 
 
+MANUAL_TRANSACTION_REASONS = {
+    "stock_in": {"purchase", "return_in", "other"},
+    "stock_out": {"return_out", "other"},
+    "adjustment_in": {"recount_correction", "manual_adjustment", "other"},
+    "adjustment_out": {
+        "damaged_goods",
+        "lost_goods",
+        "recount_correction",
+        "manual_adjustment",
+        "other"
+    }
+}
+
+
 def render_inventory_transactions_page(transactions_list, selected_product_id=None, selected_user_id=None, selected_start_date="", selected_end_date=""):
     products_list = get_all_products()
     users_list = get_all_users()
@@ -121,22 +135,16 @@ def add_inventory_transaction_route():
         flash("Please fill all required fields.", "error")
         return redirect(url_for("inventory_transactions.add_inventory_transaction_route"))
 
-    if transaction_type not in ["stock_in", "stock_out", "adjustment_in", "adjustment_out"]:
+    if transaction_type not in MANUAL_TRANSACTION_REASONS:
         flash("Invalid transaction type.", "error")
         return redirect(url_for("inventory_transactions.add_inventory_transaction_route"))
 
-    if reason not in [
-        "purchase",
-        "sale",
-        "return_in",
-        "return_out",
-        "damaged_goods",
-        "lost_goods",
-        "recount_correction",
-        "manual_adjustment",
-        "other"
-    ]:
-        flash("Invalid transaction reason.", "error")
+    if reason == "sale":
+        flash("Sale transactions are created automatically through invoices.", "error")
+        return redirect(url_for("inventory_transactions.add_inventory_transaction_route"))
+
+    if reason not in MANUAL_TRANSACTION_REASONS[transaction_type]:
+        flash("The selected reason does not match the transaction type.", "error")
         return redirect(url_for("inventory_transactions.add_inventory_transaction_route"))
 
     if reason == "other" and not note:
