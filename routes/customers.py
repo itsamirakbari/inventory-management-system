@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from db import get_all_customers, get_customer_by_id, get_customer_by_name_and_address, create_customer, update_customer, update_customer_status
 from logging_config import LOGGER_NAME
 from utils.decorators import login_required
+from utils.validators import is_valid_email
 
 
 customers_bp = Blueprint('customers', __name__)
@@ -49,6 +50,10 @@ def add_customer_route():
 
     if not customer_name or not street or not house_number or not postal_code or not city or not country:
         flash("Please fill all required fields.", "error")
+        return redirect(url_for("customers.add_customer_route"))
+
+    if email and not is_valid_email(email):
+        flash("Please enter a valid email address.", "error")
         return redirect(url_for("customers.add_customer_route"))
 
     customer_name = customer_name.title()
@@ -114,6 +119,10 @@ def update_customer_route(customer_id):
         country
     )):
         flash("Please fill all required fields.", "error")
+        return redirect(url_for("customers.customers"))
+
+    if email and not is_valid_email(email):
+        flash("Please enter a valid email address.", "error")
         return redirect(url_for("customers.customers"))
 
     customer_name = customer_name.title()

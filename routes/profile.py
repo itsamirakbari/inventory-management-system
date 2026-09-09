@@ -2,13 +2,12 @@ import logging
 import mysql.connector
 import random
 import smtplib
-import re
 import time
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils.email_service import send_email_change_verification, send_password_changed_email
-from utils.validators import is_valid_password
+from utils.validators import is_valid_password, is_valid_email
 from db import get_user_by_id, get_user_by_email, update_user_password, update_user_email
 from logging_config import LOGGER_NAME
 from utils.decorators import login_required
@@ -21,14 +20,27 @@ logger = logging.getLogger(LOGGER_NAME)
 @profile_bp.route("/", methods=["GET"])
 @login_required
 def profile():
-    user = get_user_by_id(session["user"]["user_id"])
+    user_id = session["user"]["user_id"]
 
-    if not user:
-        session.pop("user", None)
-        flash("User account could not be found.", "error")
-        return redirect(url_for("auth.login"))
+    try:
+        user = get_user_by_id(user_id)
 
-    return render_template("profile.html", profile_user=user)
+        if not user:
+            session.pop("user", None)
+            flash("User account not found.", "error")
+            return redirect(url_for("auth.login"))
+
+        return render_template("profile.html", profile_user=user)
+
+    except mysql.connector.Error:
+        flash("A database error occurred while loading your profile.", "error")
+        logger.exception(f"Database error while loading profile | User ID: {user_id}")
+        return redirect(url_for("dashboard.dashboard"))
+
+    except Exception:
+        flash("An unexpected error occurred while loading your profile.", "error")
+        logger.exception(f"Unexpected error while loading profile | User ID: {user_id}")
+        return redirect(url_for("dashboard.dashboard"))
 
 
 @profile_bp.route("/update-email", methods=["POST"])
@@ -42,29 +54,40 @@ def update_email():
         flash("Please fill all required fields.", "error")
         return redirect(url_for("profile.profile"))
 
-    if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", new_email):
+    if not is_valid_email(new_email):
         flash("Please enter a valid email address.", "error")
         return redirect(url_for("profile.profile"))
 
-    user = get_user_by_id(user_id)
+    try:
+        user = get_user_by_id(user_id)
 
-    if not user:
-        session.pop("user", None)
-        flash("User account could not be found.", "error")
-        return redirect(url_for("auth.login"))
+        if not user:
+            session.pop("user", None)
+            flash("User account could not be found.", "error")
+            return redirect(url_for("auth.login"))
 
-    if not check_password_hash(user["password_hash"], current_password):
-        flash("Current password is incorrect.", "error")
+        if not check_password_hash(user["password_hash"], current_password):
+            flash("Current password is incorrect.", "error")
+            return redirect(url_for("profile.profile"))
+
+        if new_email == user["email"].lower():
+            flash("Please enter a different email address.", "error")
+            return redirect(url_for("profile.profile"))
+
+        email_owner = get_user_by_email(new_email)
+
+        if email_owner and email_owner["id"] != user_id:
+            flash("Email address is already in use.", "error")
+            return redirect(url_for("profile.profile"))
+
+    except mysql.connector.Error:
+        flash("A database error occurred while validating your email.", "error")
+        logger.exception(f"Database error while validating email change | User ID: {user_id}")
         return redirect(url_for("profile.profile"))
 
-    if new_email == user["email"].lower():
-        flash("Please enter a different email address.", "error")
-        return redirect(url_for("profile.profile"))
-
-    email_owner = get_user_by_email(new_email)
-
-    if email_owner and email_owner["id"] != user_id:
-        flash("Email address is already in use.", "error")
+    except Exception:
+        flash("An unexpected error occurred while validating your email.", "error")
+        logger.exception(f"Unexpected error while validating email change | User ID: {user_id}")
         return redirect(url_for("profile.profile"))
 
     verification_code = random.randint(100000, 999999)
@@ -123,14 +146,14 @@ def verify_email():
 
     new_email = pending_change["new_email"]
 
-    email_owner = get_user_by_email(new_email)
-
-    if email_owner and email_owner["id"] != user_id:
-        session.pop("pending_email_change", None)
-        flash("Email address is already in use.", "error")
-        return redirect(url_for("profile.profile"))
-
     try:
+        email_owner = get_user_by_email(new_email)
+
+        if email_owner and email_owner["id"] != user_id:
+            session.pop("pending_email_change", None)
+            flash("Email address is already in use.", "error")
+            return redirect(url_for("profile.profile"))
+
         update_user_email(user_id, new_email)
 
         session_user = dict(session["user"])
@@ -178,24 +201,23 @@ def change_password():
         )
         return redirect(url_for("profile.profile"))
 
-    user = get_user_by_id(user_id)
-
-    if not user:
-        session.clear()
-        flash("User account could not be found.", "error")
-        return redirect(url_for("auth.login"))
-
-    if not check_password_hash(user["password_hash"], current_password):
-        flash("Current password is incorrect.", "error")
-        return redirect(url_for("profile.profile"))
-
-    if check_password_hash(user["password_hash"], new_password):
-        flash("New password must be different from the current password.","error")
-        return redirect(url_for("profile.profile"))
-
-    new_password_hash = generate_password_hash(new_password)
-
     try:
+        user = get_user_by_id(user_id)
+
+        if not user:
+            session.clear()
+            flash("User account could not be found.", "error")
+            return redirect(url_for("auth.login"))
+
+        if not check_password_hash(user["password_hash"], current_password):
+            flash("Current password is incorrect.", "error")
+            return redirect(url_for("profile.profile"))
+
+        if check_password_hash(user["password_hash"], new_password):
+            flash("New password must be different from the current password.","error")
+            return redirect(url_for("profile.profile"))
+
+        new_password_hash = generate_password_hash(new_password)
         update_user_password(user_id, new_password_hash)
 
     except mysql.connector.Error:

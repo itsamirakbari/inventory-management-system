@@ -1,14 +1,13 @@
 import logging
 import mysql.connector
 import random
-import re
 import smtplib
 import time
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from utils.email_service import send_verification_email, send_registration_success_email, send_password_reset_email, send_password_changed_email
-from utils.validators import is_valid_password
+from utils.validators import is_valid_password, is_valid_email
 from db import get_user_by_username, get_user_by_email, create_user, update_user_password
 from logging_config import LOGGER_NAME
 
@@ -36,7 +35,7 @@ def register():
         flash("Passwords do not match. Please try again.", "error")
         return redirect(url_for("auth.register"))
 
-    if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email):
+    if not is_valid_email(email):
         flash("Please enter a valid email address.", "error")
         return redirect(url_for("auth.register"))
 
@@ -201,7 +200,12 @@ def forgot_password():
         flash("Please enter your email address.", "error")
         return redirect(url_for("auth.forgot_password"))
 
+    if not is_valid_email(email):
+        flash("Please enter a valid email address.", "error")
+        return redirect(url_for("auth.forgot_password"))
+
     user = get_user_by_email(email)
+
     if not user:
         flash("Invalid email address.", "error")
         return redirect(url_for("auth.forgot_password"))

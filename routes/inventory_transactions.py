@@ -118,7 +118,10 @@ def inventory_transactions():
 @inventory_transactions_bp.route("/add", methods=["GET", "POST"])
 @login_required
 def add_inventory_transaction_route():
-    products_list = get_all_products()
+    products_list = [
+        product for product in get_all_products()
+        if product["is_active"]
+    ]
 
     if request.method == "GET":
         return render_template("add_inventory_transaction.html", products=products_list)
@@ -164,8 +167,8 @@ def add_inventory_transaction_route():
 
     product = get_product_by_id(product_id)
 
-    if not product:
-        flash("Product not found.", "error")
+    if not product or not product["is_active"]:
+        flash("The selected product is not available.", "error")
         return redirect(url_for("inventory_transactions.add_inventory_transaction_route"))
 
     try:

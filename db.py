@@ -135,6 +135,7 @@ def get_user_by_email(email):
 def get_all_users():
     query = """
         SELECT * FROM users
+        ORDER BY username ASC
     """
 
     return fetch_all(query)
@@ -142,7 +143,7 @@ def get_all_users():
 
 def create_user(username, email, password_hash):
     query = """
-        INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s) 
+        INSERT INTO users (username, email, password_hash) VALUES (%s, %s, %s)
     """
 
     return execute(query, (username, email, password_hash))
@@ -170,6 +171,7 @@ def update_user_email(user_id, email):
 def get_all_categories():
     query = """
         SELECT * FROM categories
+        ORDER BY name ASC
     """
 
     return fetch_all(query)
@@ -218,6 +220,7 @@ def delete_category(category_id):
 def get_all_suppliers():
     query = """
         SELECT * FROM suppliers
+        ORDER BY company_name ASC
     """
 
     return fetch_all(query)
@@ -273,16 +276,17 @@ def update_supplier(
         description
 ):
     query = """
-        UPDATE suppliers SET company_name = %s,
-        contact_person = %s,
-        email = %s,
-        phone = %s,
-        street = %s,
-        house_number = %s,
-        postal_code = %s,
-        city = %s,
-        country = %s,
-        description = %s
+        UPDATE suppliers
+        SET company_name = %s,
+            contact_person = %s,
+            email = %s,
+            phone = %s,
+            street = %s,
+            house_number = %s,
+            postal_code = %s,
+            city = %s,
+            country = %s,
+            description = %s
         WHERE id = %s
     """
 
@@ -301,6 +305,7 @@ def delete_supplier(supplier_id):
 def get_all_customers():
     query = """
         SELECT * FROM customers
+        ORDER BY customer_name ASC
     """
 
     return fetch_all(query)
@@ -309,6 +314,7 @@ def get_all_customers():
 def get_active_customers():
     query = """
         SELECT * FROM customers WHERE is_active = 1
+        ORDER BY customer_name ASC
     """
 
     return fetch_all(query)
@@ -324,7 +330,7 @@ def get_customer_by_id(customer_id):
 
 def get_customer_by_name_and_address(customer_name, street, house_number, postal_code, city, country):
     query = """
-        SELECT * FROM customers 
+        SELECT * FROM customers
         WHERE customer_name = %s
         AND street = %s
         AND house_number = %s
@@ -371,16 +377,17 @@ def update_customer(
         description
 ):
     query = """
-        UPDATE customers SET customer_name = %s,
-        contact_person = %s,
-        email = %s,
-        phone = %s,
-        street = %s,
-        house_number = %s,
-        postal_code = %s,
-        city = %s,
-        country = %s,
-        description = %s
+        UPDATE customers
+        SET customer_name = %s,
+            contact_person = %s,
+            email = %s,
+            phone = %s,
+            street = %s,
+            house_number = %s,
+            postal_code = %s,
+            city = %s,
+            country = %s,
+            description = %s
         WHERE id = %s
     """
 
@@ -389,7 +396,9 @@ def update_customer(
 
 def update_customer_status(customer_id, is_active):
     query = """
-        UPDATE customers SET is_active = %s WHERE id = %s
+        UPDATE customers
+        SET is_active = %s
+        WHERE id = %s
     """
 
     return execute(query, (is_active, customer_id))
@@ -399,6 +408,7 @@ def update_customer_status(customer_id, is_active):
 def get_all_products():
     query = """
         SELECT * FROM products
+        ORDER BY name ASC
     """
 
     return fetch_all(query)
@@ -441,7 +451,7 @@ def create_product(
         supplier_id
 ):
     query = """
-        INSERT INTO 
+        INSERT INTO
         products (name, sku, price, stock_quantity, category_id, supplier_id)
         VALUES (%s, %s, %s, %s, %s, %s)
     """
@@ -451,12 +461,13 @@ def create_product(
 
 def update_product(product_id, product_name, sku, price, stock_quantity, category_id, supplier_id):
     query = """
-        UPDATE products SET name = %s,
-        sku = %s,
-        price = %s,
-        stock_quantity = %s,
-        category_id = %s,
-        supplier_id = %s
+        UPDATE products
+        SET name = %s,
+            sku = %s,
+            price = %s,
+            stock_quantity = %s,
+            category_id = %s,
+            supplier_id = %s
         WHERE id = %s
     """
 
@@ -473,7 +484,9 @@ def delete_product(product_id):
 
 def update_product_status(product_id, is_active):
     query = """
-        UPDATE products SET is_active = %s WHERE id = %s
+        UPDATE products
+        SET is_active = %s
+        WHERE id = %s
     """
 
     return execute(query, (is_active, product_id))
@@ -595,8 +608,8 @@ def update_invoice_status(invoice_id, status):
         raise ValueError("Invalid invoice status.")
 
     query = """
-        UPDATE invoices 
-        SET status = %s 
+        UPDATE invoices
+        SET status = %s
         WHERE id = %s
     """
 
@@ -664,7 +677,7 @@ def create_inventory_transaction_with_stock_update(
 
         cursor.execute(
             """
-            SELECT id, name, sku, stock_quantity
+            SELECT id, name, sku, stock_quantity, is_active
             FROM products
             WHERE id = %s
             FOR UPDATE
@@ -675,6 +688,9 @@ def create_inventory_transaction_with_stock_update(
 
         if not product:
             raise ValueError("Product not found.")
+
+        if not product["is_active"]:
+            raise ValueError("Inactive products cannot receive new inventory transactions.")
 
         if quantity <= 0:
             raise ValueError("Quantity must be greater than 0.")
@@ -775,10 +791,10 @@ def get_active_products_count():
 
 def get_low_stock_products_count(low_stock_threshold=5):
     query = """
-        SELECT COUNT(*) AS low_stock_products 
+        SELECT COUNT(*) AS low_stock_products
         FROM products
         WHERE is_active = 1
-        AND stock_quantity > 0 
+        AND stock_quantity > 0
         AND stock_quantity <= %s
     """
     result = fetch_one(query, (low_stock_threshold,))
@@ -811,10 +827,10 @@ def get_recent_inventory_transactions(limit=5):
             products.sku AS product_sku,
             users.username AS username
         FROM inventory_transactions
-        
+
         JOIN products ON products.id = inventory_transactions.product_id
         JOIN users ON users.id = inventory_transactions.user_id
-        
+
         ORDER BY inventory_transactions.created_at DESC
         LIMIT %s
     """
@@ -828,7 +844,7 @@ def get_low_stock_products(limit=5, low_stock_threshold=5):
         SELECT id, name, sku, stock_quantity
         FROM products
         WHERE is_active = 1
-        AND stock_quantity > 0 
+        AND stock_quantity > 0
         AND stock_quantity <= %s
         ORDER BY stock_quantity ASC, name ASC
         LIMIT %s
@@ -842,7 +858,7 @@ def get_out_of_stock_products(limit=5):
         SELECT id, name, sku, stock_quantity
         FROM products
         WHERE is_active = 1
-        AND stock_quantity = 0 
+        AND stock_quantity = 0
         ORDER BY stock_quantity ASC, name ASC
         LIMIT %s
     """

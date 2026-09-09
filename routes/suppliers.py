@@ -5,6 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from db import get_all_suppliers, get_supplier_by_id, get_supplier_by_name, create_supplier, update_supplier, delete_supplier
 from logging_config import LOGGER_NAME
 from utils.decorators import login_required
+from utils.validators import is_valid_email
 
 
 suppliers_bp = Blueprint('suppliers', __name__)
@@ -62,6 +63,10 @@ def add_supplier_route():
         flash("Please fill all required fields.", "error")
         return redirect(url_for("suppliers.add_supplier_route"))
 
+    if not is_valid_email(email):
+        flash("Please enter a valid email address.", "error")
+        return redirect(url_for("suppliers.add_supplier_route"))
+
     company_name = company_name.title()
     contact_person = contact_person.title()
     street = street.title()
@@ -105,13 +110,13 @@ def add_supplier_route():
 @suppliers_bp.route("/delete/<int:supplier_id>", methods=["POST"])
 @login_required
 def delete_supplier_route(supplier_id):
-    supplier = get_supplier_by_id(supplier_id)
-
-    if not supplier:
-        flash("Supplier not found.", "error")
-        return redirect(url_for("suppliers.suppliers"))
-
     try:
+        supplier = get_supplier_by_id(supplier_id)
+
+        if not supplier:
+            flash("Supplier not found.", "error")
+            return redirect(url_for("suppliers.suppliers"))
+
         delete_supplier(supplier_id)
         flash(f"Supplier '{supplier['company_name']}' deleted successfully.", "success")
         logger.info(f"Supplier deleted successfully | Supplier ID: {supplier_id} | Supplier: '{supplier['company_name']}' | User: {session['user']['username']}")
@@ -119,12 +124,12 @@ def delete_supplier_route(supplier_id):
 
     except mysql.connector.Error:
         flash("Database error. Please try again.", "error")
-        logger.exception(f"Database error while deleting supplier | Supplier ID: {supplier_id} | Supplier: '{supplier['company_name']}' | User: {session['user']['username']}")
+        logger.exception(f"Database error while deleting supplier | Supplier ID: {supplier_id} | User: {session['user']['username']}")
         return redirect(url_for("suppliers.suppliers"))
 
     except Exception:
         flash("An unexpected error occurred.", "error")
-        logger.exception(f"Unexpected error while deleting supplier | Supplier ID: {supplier_id} | Supplier: '{supplier['company_name']}' | User: {session['user']['username']}")
+        logger.exception(f"Unexpected error while deleting supplier | Supplier ID: {supplier_id} | User: {session['user']['username']}")
         return redirect(url_for("suppliers.suppliers"))
 
 
@@ -155,6 +160,10 @@ def update_supplier_route(supplier_id):
         description
     )):
         flash("Please fill all required fields.", "error")
+        return redirect(url_for("suppliers.suppliers"))
+
+    if not is_valid_email(email):
+        flash("Please enter a valid email address.", "error")
         return redirect(url_for("suppliers.suppliers"))
 
     company_name = company_name.title()
