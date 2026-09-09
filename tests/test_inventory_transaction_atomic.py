@@ -62,7 +62,8 @@ class InventoryTransactionAtomicTests(unittest.TestCase):
             "id": 7,
             "name": "Test Product",
             "sku": "TEST-007",
-            "stock_quantity": 10
+            "stock_quantity": 10,
+            "is_active": True
         }
 
     def run_transaction(
